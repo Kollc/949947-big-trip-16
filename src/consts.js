@@ -14,9 +14,12 @@ const DESTINATION_DESCRIPTION = [
   'Nullam nunc ex,convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
+const OFFER_TITLES = ['Upgrade to a business class', 'Add luggage', 'Switch to comfort', 'Add meal', 'Choose seats', 'Travel by train'];
+
 export {
   CITY_LIST,
   POINT_TYPE_LIST,
   MAX_COUNT_DESCRIPTION,
   DESTINATION_DESCRIPTION,
+  OFFER_TITLES
 };

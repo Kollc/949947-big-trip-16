@@ -4,6 +4,7 @@ import {
   POINT_TYPE_LIST,
   MAX_COUNT_DESCRIPTION,
   DESTINATION_DESCRIPTION,
+  OFFER_TITLES
 } from './../consts';
 
 const getRandomInteger = (a = 0, b = 1) => {
@@ -29,8 +30,8 @@ const generatePhotoDestination = () => {
   const photoUrl = getPhotoDestination(getRandomInteger(1, 20));
 
   return {
-    'src': photoUrl,
-    'description': DESTINATION_DESCRIPTION[getRandomInteger(1, DESTINATION_DESCRIPTION.length - 1)]
+    src: photoUrl,
+    description: DESTINATION_DESCRIPTION[getRandomInteger(1, DESTINATION_DESCRIPTION.length - 1)]
   };
 };
 
@@ -48,29 +49,24 @@ const getRandomCity = () => (CITY_LIST[getRandomInteger(0, CITY_LIST.length - 1)
 const getRandomType = () => (POINT_TYPE_LIST[getRandomInteger(0, POINT_TYPE_LIST.length - 1)]);
 
 const generateDestination = () => ({
-  'description': getRandomDescription(DESTINATION_DESCRIPTION, getRandomInteger(0, MAX_COUNT_DESCRIPTION)),
-  'name': getRandomCity(),
-  'pictures': getPhotoDestinationObjList(getRandomInteger(1, 5))
+  description: getRandomDescription(DESTINATION_DESCRIPTION, getRandomInteger(0, MAX_COUNT_DESCRIPTION)),
+  name: getRandomCity(),
+  pictures: getPhotoDestinationObjList(getRandomInteger(1, 5))
 });
 
-const getDate = (fromDate = true) => {
-  const maxDaysGap = fromDate ? 0 : 5;
-  const daysGap = getRandomInteger(maxDaysGap, 0);
-
-  const maxHoursGap = fromDate ? -2 : 2;
-  const hoursGap = getRandomInteger(maxHoursGap, 0);
-
-  const maxMinutesGap = fromDate ? 0 : 60;
-  const minutesGap = getRandomInteger(maxMinutesGap, 0);
+const getDate = (previousDate) => {
+  const daysGap = getRandomInteger(5, 0);
+  const hoursGap = getRandomInteger(5, 0);
+  const minutesGap = getRandomInteger(60, 0);
 
 
-  return dayjs().add(daysGap, 'days').add(hoursGap, 'hours').add(minutesGap, 'minutes').toDate();
+  return previousDate.add(daysGap, 'days').add(hoursGap, 'hours').add(minutesGap, 'minutes');
 };
 
 const createOfferObj = (id) => ({
-  'id': id,
-  'title': 'Upgrade to a business class',
-  'price': getRandomInteger(10, 260)
+  id: id,
+  title: OFFER_TITLES[id],
+  price: getRandomInteger(10, 260)
 });
 
 const getOffersList = () => {
@@ -83,21 +79,25 @@ const getOffersList = () => {
   return result;
 };
 const generateOffer = (type) => ({
-  'type': type,
-  'offers': getOffersList()
+  type: type,
+  offers: getOffersList()
 });
 
-const getPointObj = (id) => {
+const getPointObj = (id, dateStart) => {
   const currentType = getRandomType();
+  dateStart = dateStart === null ? dayjs() : dateStart;
+  const dateFrom = getDate(dateStart);
+  const dateTo = getDate(dateFrom);
+
   return {
     id,
-    'basePrice': getRandomInteger(1100, 11200),
-    'dateFrom': getDate(),
-    'dateTo': getDate(false),
-    'destination': generateDestination(),
-    'isFavorite': Boolean(getRandomInteger()),
-    'offers': generateOffer(currentType),
-    'type': currentType
+    basePrice: getRandomInteger(1100, 11200),
+    dateFrom,
+    dateTo,
+    destination: generateDestination(),
+    isFavorite: Boolean(getRandomInteger()),
+    offers: generateOffer(currentType),
+    type: currentType
   };
 };
 
@@ -105,7 +105,11 @@ const getPoints = () => {
   const result = [];
 
   for (let i = 0; i < 20; i++) {
-    result.push(getPointObj(i));
+    if (result[i - 1]) {
+      result.push(getPointObj(i, result[i - 1].dateFrom));
+    } else {
+      result.push(getPointObj(i, null));
+    }
   }
 
   return result;

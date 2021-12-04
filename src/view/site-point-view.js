@@ -43,6 +43,8 @@ const createSitePointTemplate = (point) => {
         ${result.join('')}
       </ul>`;
     }
+
+    return '';
   };
 
   return `<li class="trip-events__item">

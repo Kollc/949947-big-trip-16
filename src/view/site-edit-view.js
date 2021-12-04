@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 
 import {
-  ucFirst
-} from './../utils/upper-case-first';
+  capitalize
+} from './../utils/capitalize';
 
 import {
   CITY_LIST,
@@ -24,7 +24,7 @@ const createSiteEditTemplate = (point = {}) => {
       const resultPoint = POINT_TYPE_LIST.map((pointType) => (
         `<div class="event__type-item">
           <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
-          <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${ucFirst(pointType)}</label>
+          <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${capitalize(pointType)}</label>
         </div>`));
 
       return `<div class="event__type-list">
