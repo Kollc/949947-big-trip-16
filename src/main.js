@@ -16,10 +16,6 @@ import {
 } from './view/site-edit-view';
 
 import {
-  createSiteCreateTemplate
-} from './view/site-create-view';
-
-import {
   createSitePointTemplate
 } from './view/site-point-view';
 
@@ -30,6 +26,14 @@ import {
 import {
   createSiteListTemplate
 } from './view/site-list-view';
+
+import {
+  getPoints
+} from './mock/point';
+
+const TASK_COUNT = 15;
+
+const tasks = getPoints();
 
 const navigationContainerElement = document.querySelector('.trip-controls__navigation');
 renderTemplate(navigationContainerElement, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
@@ -42,9 +46,8 @@ renderTemplate(tripSectionElement, createSiteSortTemplate(), RenderPosition.BEFO
 renderTemplate(tripSectionElement, createSiteListTemplate(), RenderPosition.BEFOREEND);
 
 const tripListContainerElement = document.querySelector('.trip-events__list');
-renderTemplate(tripListContainerElement, createSiteEditTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(tripListContainerElement, createSiteCreateTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(tripListContainerElement, createSiteEditTemplate(tasks[0]), RenderPosition.BEFOREEND);
 
-for (let i = 0; i < 3; i++) {
-  renderTemplate(tripListContainerElement, createSitePointTemplate(), RenderPosition.BEFOREEND);
+for (let i = 1; i < TASK_COUNT; i++) {
+  renderTemplate(tripListContainerElement, createSitePointTemplate(tasks[i]), RenderPosition.BEFOREEND);
 }
