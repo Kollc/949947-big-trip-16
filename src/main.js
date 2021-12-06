@@ -1,53 +1,61 @@
 import {
   RenderPosition,
-  renderTemplate
+  render
 } from './utils/render';
-
-import {
-  createSiteMenuTemplate
-} from './view/site-menu-view';
-
-import {
-  createSiteFilterTemplate
-} from './view/site-filter-view';
-
-import {
-  createSiteEditTemplate
-} from './view/site-edit-view';
-
-import {
-  createSitePointTemplate
-} from './view/site-point-view';
-
-import {
-  createSiteSortTemplate
-} from './view/site-sort-view';
-
-import {
-  createSiteListTemplate
-} from './view/site-list-view';
 
 import {
   getPoints
 } from './mock/point';
 
-const TASK_COUNT = 15;
+import SiteMenuView from './view/site-menu-view';
+import SiteFilterView from './view/site-filter-view';
+import SiteEditView from './view/site-edit-view';
+import SitePointView from './view/site-point-view';
+import SiteSortView from './view/site-sort-view';
+import SiteListView from './view/site-list-view';
 
-const tasks = getPoints();
+const POINT_COUNT = 15;
+const points = getPoints();
 
 const navigationContainerElement = document.querySelector('.trip-controls__navigation');
-renderTemplate(navigationContainerElement, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
-
 const filterContainerElement = document.querySelector('.trip-controls__filters');
-renderTemplate(filterContainerElement, createSiteFilterTemplate(), RenderPosition.BEFOREEND);
-
 const tripSectionElement = document.querySelector('.trip-events');
-renderTemplate(tripSectionElement, createSiteSortTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(tripSectionElement, createSiteListTemplate(), RenderPosition.BEFOREEND);
 
-const tripListContainerElement = document.querySelector('.trip-events__list');
-renderTemplate(tripListContainerElement, createSiteEditTemplate(tasks[0]), RenderPosition.BEFOREEND);
+const renderPoints = (pointListElement, point) => {
+  const pointComponent = new SitePointView(point);
+  const pointEditComponent = new SiteEditView(point);
 
-for (let i = 1; i < TASK_COUNT; i++) {
-  renderTemplate(tripListContainerElement, createSitePointTemplate(tasks[i]), RenderPosition.BEFOREEND);
-}
+  const replacePointToEditForm = () => {
+    pointListElement.replaceChild(pointEditComponent.element, pointComponent.element);
+  };
+
+  const replaceEditFormToPoint = () => {
+    pointListElement.replaceChild(pointComponent.element, pointEditComponent.element);
+  };
+
+  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replacePointToEditForm();
+  });
+
+  pointEditComponent.element.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceEditFormToPoint();
+  });
+
+  render(pointListElement, pointComponent.element, RenderPosition.BEFOREEND);
+};
+
+const renderListPoints = (container, listPoints) => {
+  const tripListContainerElement = new SiteListView().element;
+  render(container, tripListContainerElement, RenderPosition.BEFOREEND);
+
+  for (let i = 1; i < POINT_COUNT; i++) {
+    renderPoints(tripListContainerElement, listPoints[i]);
+  }
+};
+
+render(navigationContainerElement, new SiteMenuView().element, RenderPosition.BEFOREEND);
+render(filterContainerElement, new SiteFilterView().element, RenderPosition.BEFOREEND);
+render(tripSectionElement, new SiteSortView().element, RenderPosition.BEFOREEND);
+
+renderListPoints(tripSectionElement, points);

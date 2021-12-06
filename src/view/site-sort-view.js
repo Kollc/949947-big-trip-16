@@ -1,3 +1,5 @@
+import {createElement} from './../utils/render';
+
 const createSiteSortTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <div class="trip-sort__item  trip-sort__item--day">
@@ -27,6 +29,23 @@ const createSiteSortTemplate = () => (
   </form>`
 );
 
-export {
-  createSiteSortTemplate
-};
+
+export default class SiteSortView {
+  #element = null;
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createSiteSortTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
