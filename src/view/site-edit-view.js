@@ -5,18 +5,31 @@ import {
 } from './../utils/capitalize';
 
 import {
+  createElement
+} from './../utils/render';
+
+import {
   CITY_LIST,
   POINT_TYPE_LIST,
 } from './../consts.js';
 
-const createSiteEditTemplate = (point = {}) => {
+const BLANK_POINT = {
+  basePrice: 0,
+  dateFrom: dayjs(),
+  dateTo :dayjs(),
+  destination: {},
+  offersContainer : {},
+  type: 'bus',
+};
+
+const createSiteEditTemplate = (point) => {
   const {
-    basePrice = 0,
-    dateFrom = dayjs(),
-    dateTo =  dayjs(),
-    destination = {},
-    offers: offersContainer = {},
-    type = 'bus',
+    basePrice,
+    dateFrom,
+    dateTo,
+    destination,
+    offers: offersContainer,
+    type,
   } = point;
 
   const createEventTypeListTemplate = () => {
@@ -170,6 +183,27 @@ const createSiteEditTemplate = (point = {}) => {
 </form>`;
 };
 
-export {
-  createSiteEditTemplate
-};
+export default class SiteEditView {
+  #element = null;
+  #point = null;
+
+  constructor(point = BLANK_POINT) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createSiteEditTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

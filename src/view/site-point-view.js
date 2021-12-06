@@ -5,8 +5,11 @@ import {
   dateMonthDay,
 } from './../utils/date-helper';
 
-const createSitePointTemplate = (point) => {
+import {
+  createElement
+} from './../utils/render';
 
+const createSitePointTemplate = (point) => {
   const {
     offers: offersContainer,
     dateFrom,
@@ -79,6 +82,28 @@ const createSitePointTemplate = (point) => {
   </li>`;
 };
 
-export {
-  createSitePointTemplate
-};
+
+export default class SitePointView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createSitePointTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
