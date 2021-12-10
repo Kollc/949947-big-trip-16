@@ -183,7 +183,7 @@ const createSiteEditTemplate = (point) => {
 </form>`;
 };
 
-export default class SiteEditView {
+export default class SiteEmptyView {
   #element = null;
   #point = null;
 
