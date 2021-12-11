@@ -29,16 +29,6 @@ const renderPoints = (pointListElement, point) => {
   const buttonCloseElement = pointEditComponent.element.querySelector('.event__rollup-btn');
   const buttonOpenElement = pointComponent.element.querySelector('.event__rollup-btn');
 
-  const replacePointToEditForm = () => {
-    pointListElement.replaceChild(pointEditComponent.element, pointComponent.element);
-  };
-
-  const replaceEditFormToPoint = () => {
-    if (pointListElement.contains(pointEditComponent.element)) {
-      pointListElement.replaceChild(pointComponent.element, pointEditComponent.element);
-    }
-  };
-
   const openEditClickHandler = () => {
     replacePointToEditForm();
   };
@@ -60,9 +50,24 @@ const renderPoints = (pointListElement, point) => {
   };
 
   buttonOpenElement.addEventListener('click', openEditClickHandler);
-  pointEditComponent.element.addEventListener('submit', editSubmitHandler);
-  document.addEventListener('keydown', closeEditKeydownHandler);
-  buttonCloseElement.addEventListener('click', closeEditClickHandler);
+
+  function replacePointToEditForm() {
+    pointListElement.replaceChild(pointEditComponent.element, pointComponent.element);
+
+    pointEditComponent.element.addEventListener('submit', editSubmitHandler);
+    document.addEventListener('keydown', closeEditKeydownHandler);
+    buttonCloseElement.addEventListener('click', closeEditClickHandler);
+  }
+
+  function replaceEditFormToPoint() {
+    if (pointListElement.contains(pointEditComponent.element)) {
+      pointListElement.replaceChild(pointComponent.element, pointEditComponent.element);
+
+      pointEditComponent.element.removeEventListener('submit', editSubmitHandler);
+      document.removeEventListener('keydown', closeEditKeydownHandler);
+      buttonCloseElement.removeEventListener('click', closeEditClickHandler);
+    }
+  }
 
   render(pointListElement, pointComponent.element, RenderPosition.BEFOREEND);
 };
