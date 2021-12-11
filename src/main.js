@@ -13,6 +13,7 @@ import SiteEditView from './view/site-edit-view';
 import SitePointView from './view/site-point-view';
 import SiteSortView from './view/site-sort-view';
 import SiteListView from './view/site-list-view';
+import SiteEmptyView from './view/site-empty-view';
 
 const POINT_COUNT = 15;
 const points = getPoints();
@@ -25,22 +26,48 @@ const renderPoints = (pointListElement, point) => {
   const pointComponent = new SitePointView(point);
   const pointEditComponent = new SiteEditView(point);
 
-  const replacePointToEditForm = () => {
-    pointListElement.replaceChild(pointEditComponent.element, pointComponent.element);
-  };
+  const buttonCloseElement = pointEditComponent.element.querySelector('.event__rollup-btn');
+  const buttonOpenElement = pointComponent.element.querySelector('.event__rollup-btn');
 
-  const replaceEditFormToPoint = () => {
-    pointListElement.replaceChild(pointComponent.element, pointEditComponent.element);
-  };
-
-  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  const openEditClickHandler = () => {
     replacePointToEditForm();
-  });
+  };
 
-  pointEditComponent.element.addEventListener('submit', (evt) => {
+  const editSubmitHandler = (evt) => {
     evt.preventDefault();
     replaceEditFormToPoint();
-  });
+  };
+
+  const closeEditKeydownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      replaceEditFormToPoint();
+    }
+  };
+
+  const closeEditClickHandler = () => {
+    replaceEditFormToPoint();
+  };
+
+  buttonOpenElement.addEventListener('click', openEditClickHandler);
+
+  function replacePointToEditForm() {
+    pointListElement.replaceChild(pointEditComponent.element, pointComponent.element);
+
+    pointEditComponent.element.addEventListener('submit', editSubmitHandler);
+    document.addEventListener('keydown', closeEditKeydownHandler);
+    buttonCloseElement.addEventListener('click', closeEditClickHandler);
+  }
+
+  function replaceEditFormToPoint() {
+    if (pointListElement.contains(pointEditComponent.element)) {
+      pointListElement.replaceChild(pointComponent.element, pointEditComponent.element);
+
+      pointEditComponent.element.removeEventListener('submit', editSubmitHandler);
+      document.removeEventListener('keydown', closeEditKeydownHandler);
+      buttonCloseElement.removeEventListener('click', closeEditClickHandler);
+    }
+  }
 
   render(pointListElement, pointComponent.element, RenderPosition.BEFOREEND);
 };
@@ -49,8 +76,12 @@ const renderListPoints = (container, listPoints) => {
   const tripListContainerElement = new SiteListView().element;
   render(container, tripListContainerElement, RenderPosition.BEFOREEND);
 
-  for (let i = 1; i < POINT_COUNT; i++) {
-    renderPoints(tripListContainerElement, listPoints[i]);
+  if (listPoints.length > 0) {
+    for (let i = 1; i < POINT_COUNT; i++) {
+      renderPoints(tripListContainerElement, listPoints[i]);
+    }
+  } else {
+    render(tripListContainerElement, new SiteEmptyView().element, RenderPosition.BEFOREEND);
   }
 };
 
