@@ -4,9 +4,7 @@ import {
   capitalize
 } from './../utils/capitalize';
 
-import {
-  createElement
-} from './../utils/render';
+import AbstractView from './abstract-view.js';
 
 import {
   CITY_LIST,
@@ -16,9 +14,9 @@ import {
 const BLANK_POINT = {
   basePrice: 0,
   dateFrom: dayjs(),
-  dateTo :dayjs(),
+  dateTo: dayjs(),
   destination: {},
-  offersContainer : {},
+  offersContainer: {},
   type: 'bus',
 };
 
@@ -183,27 +181,46 @@ const createSiteEditTemplate = (point) => {
 </form>`;
 };
 
-export default class SiteEmptyView {
-  #element = null;
+export default class SiteEmptyView extends AbstractView {
   #point = null;
+  #buttonClose = null;
 
   constructor(point = BLANK_POINT) {
+    super();
     this.#point = point;
+    this.#buttonClose = this.element.querySelector('.event__rollup-btn');
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
 
   get template() {
     return createSiteEditTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setCloseEditClickHandler = (callback) => {
+    this._callback.clickClose = callback;
+    this. #buttonClose.addEventListener('click', this.#editCloseClickHandler);
+  }
+
+  #editCloseClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickClose();
+  }
+
+  setEditSubmitHandler = (callback) => {
+    this._callback.submit = callback;
+    this.element.addEventListener('click', this.#editSubmitHandler);
+  }
+
+  #editSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.submit();
+  }
+
+  removeEventSubmitHandler = () => {
+    this.element.removeEventListener('click', this.#editSubmitHandler);
+  }
+
+  removeEventCloseClickHandler = () => {
+    this. #buttonClose.addEventListener('click', this.#editCloseClickHandler);
   }
 }
