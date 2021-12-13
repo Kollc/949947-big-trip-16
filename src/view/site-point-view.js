@@ -5,9 +5,7 @@ import {
   dateMonthDay,
 } from './../utils/date-helper';
 
-import {
-  createElement
-} from './../utils/render';
+import AbstractView from './abstract-view.js';
 
 const createSitePointTemplate = (point) => {
   const {
@@ -83,27 +81,25 @@ const createSitePointTemplate = (point) => {
 };
 
 
-export default class SitePointView {
-  #element = null;
+export default class SitePointView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createSitePointTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setOpenEditClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 }
