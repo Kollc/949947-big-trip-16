@@ -20,6 +20,7 @@ const createSitePointTemplate = (point) => {
     }
   } = point;
 
+
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
   const createPointOffersTemplate = () => {
@@ -94,12 +95,22 @@ export default class SitePointView extends AbstractView {
   }
 
   setOpenEditClickHandler = (callback) => {
-    this._callback.click = callback;
+    this._callback.clickOpen = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.clickOpen();
+  }
+
+  setAddFavoriteClickHandler = (callback) => {
+    this._callback.clickFavorite = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#addFavoriteClickHandler);
+  }
+
+  #addFavoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickFavorite();
   }
 }
