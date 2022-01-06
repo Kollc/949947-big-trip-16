@@ -208,7 +208,7 @@ export default class SiteEmptyView extends AbstractView {
 
   setEditSubmitHandler = (callback) => {
     this._callback.submit = callback;
-    this.element.addEventListener('click', this.#editSubmitHandler);
+    this.element.addEventListener('submit', this.#editSubmitHandler);
   }
 
   #editSubmitHandler = (evt) => {
@@ -217,7 +217,7 @@ export default class SiteEmptyView extends AbstractView {
   }
 
   removeEventSubmitHandler = () => {
-    this.element.removeEventListener('click', this.#editSubmitHandler);
+    this.element.removeEventListener('submit', this.#editSubmitHandler);
   }
 
   removeEventCloseClickHandler = () => {

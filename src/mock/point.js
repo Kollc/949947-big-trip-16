@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import {
   CITY_LIST,
   POINT_TYPE_LIST,
@@ -83,14 +84,14 @@ const generateOffer = (type) => ({
   offers: getOffersList()
 });
 
-const getPointObj = (id, dateStart) => {
+const getPointObj = (dateStart) => {
   const currentType = getRandomType();
   dateStart = dateStart === null ? dayjs() : dateStart;
   const dateFrom = getDate(dateStart);
   const dateTo = getDate(dateFrom);
 
   return {
-    id,
+    id: nanoid(),
     basePrice: getRandomInteger(1100, 11200),
     dateFrom,
     dateTo,
@@ -106,9 +107,9 @@ const getPoints = () => {
 
   for (let i = 0; i < 20; i++) {
     if (result[i - 1]) {
-      result.push(getPointObj(i, result[i - 1].dateFrom));
+      result.push(getPointObj(result[i - 1].dateFrom));
     } else {
-      result.push(getPointObj(i, null));
+      result.push(getPointObj(null));
     }
   }
 
