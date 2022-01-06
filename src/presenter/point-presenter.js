@@ -39,7 +39,7 @@ export default class PointPresenter {
     this.#setAddFavoriteClickHandler();
 
     if (pointComponent === null || pointEditComponent === null) {
-      this.#renderPoints();
+      this.#renderPoint();
       return;
     }
 
@@ -55,7 +55,7 @@ export default class PointPresenter {
     remove(pointEditComponent);
   }
 
-  #renderPoints = () => {
+  #renderPoint = () => {
     render(this.#container, this.#pointComponent, RenderPosition.BEFOREEND);
   }
 
