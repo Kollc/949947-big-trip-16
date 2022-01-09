@@ -7,10 +7,7 @@ import {
   remove,
 } from '../utils/render';
 
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { Mode } from '../consts';
 
 export default class PointPresenter {
   #pointComponent = null;;
@@ -70,6 +67,11 @@ export default class PointPresenter {
     if (this.#mode !== Mode.DEFAULT) {
       this.#replaceEditFormToPoint();
     }
+  }
+
+  destroy = () => {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   }
 
   #setOpenEditClickHandler = () => {

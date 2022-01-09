@@ -16,10 +16,26 @@ const DESTINATION_DESCRIPTION = [
 
 const OFFER_TITLES = ['Upgrade to a business class', 'Add luggage', 'Switch to comfort', 'Add meal', 'Choose seats', 'Travel by train'];
 
+const SortType = {
+  DEFAULT: 'default',
+  BY_PRICE: 'by-price',
+  BY_TIME: 'by-time',
+};
+
+const POINT_COUNT = 15;
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export {
   CITY_LIST,
   POINT_TYPE_LIST,
   MAX_COUNT_DESCRIPTION,
   DESTINATION_DESCRIPTION,
-  OFFER_TITLES
+  OFFER_TITLES,
+  POINT_COUNT,
+  SortType,
+  Mode,
 };
