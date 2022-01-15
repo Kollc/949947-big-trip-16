@@ -7,7 +7,7 @@ import SiteMenuView from '../view/site-menu-view';
 import SiteFilterView from '../view/site-filter-view';
 import SiteSortView from '../view/site-sort-view';
 import SiteListView from '../view/site-list-view';
-import SiteEmptyView from '../view/site-empty-view';
+import SiteEditView from '../view/site-empty-view';
 import PointPresenter from './point-presenter';
 import {updateItem} from '../utils/common.js';
 import { POINT_COUNT } from '../consts';
@@ -100,7 +100,7 @@ export default class TripPresenter {
   }
 
   #renderNoPoints = () => {
-    render(this.#tripListContainerElement, new SiteEmptyView(), RenderPosition.BEFOREEND);
+    render(this.#tripListContainerElement, new SiteEditView(), RenderPosition.BEFOREEND);
   }
 
   #handleModeChange = () => {

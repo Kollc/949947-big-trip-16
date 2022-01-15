@@ -8,6 +8,7 @@ import {
 } from '../utils/render';
 
 import { Mode } from '../consts';
+import { allDestinitions, allOffers } from '../mock/point';
 
 export default class PointPresenter {
   #pointComponent = null;;
@@ -30,7 +31,7 @@ export default class PointPresenter {
 
     this.#point = point;
     this.#pointComponent = new SitePointView(this.#point);
-    this.#pointEditComponent = new SiteEditView(this.#point);
+    this.#pointEditComponent = new SiteEditView(this.#point, allOffers(), allDestinitions());
 
     this.#setOpenEditClickHandler();
     this.#setAddFavoriteClickHandler();
