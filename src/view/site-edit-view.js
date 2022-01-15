@@ -11,6 +11,10 @@ import {
 
 import SmartView from './smart-view';
 
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
 const BLANK_POINT = {
   basePrice: 0,
   dateFrom: dayjs(),
@@ -183,16 +187,17 @@ const createSiteEditTemplate = (point) => {
 };
 
 export default class SiteEditView extends SmartView {
-  #buttonClose = null;
+  #datepicker = null;
 
   constructor(point = BLANK_POINT, offers = {}, destinations = {}) {
     super();
     this._offers = offers;
     this._destinations = destinations;
     this._data = SiteEditView.parsePointToData(point);
-    this.#buttonClose = this.element.querySelector('.event__rollup-btn');
 
     this.#setInnerHandlers();
+    this.#setDatepickerDateFrom();
+    this.#setDatepickerDateTo();
   }
 
   #setInnerHandlers = () => {
@@ -200,8 +205,16 @@ export default class SiteEditView extends SmartView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
   }
 
+  reset = (point) => {
+    this.updateData(
+      SiteEditView.parsePointToData(point),
+    );
+  }
+
   restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDatepickerDateFrom();
+    this.#setDatepickerDateTo();
     this.setEditSubmitHandler(this._callback.submit);
     this.setCloseEditClickHandler(this._callback.clickClose);
   }
@@ -233,7 +246,7 @@ export default class SiteEditView extends SmartView {
 
   setCloseEditClickHandler = (callback) => {
     this._callback.clickClose = callback;
-    this. #buttonClose.addEventListener('click', this.#editCloseClickHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editCloseClickHandler);
   }
 
   #editCloseClickHandler = (evt) => {
@@ -256,7 +269,50 @@ export default class SiteEditView extends SmartView {
   }
 
   removeEventCloseClickHandler = () => {
-    this. #buttonClose.addEventListener('click', this.#editCloseClickHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editCloseClickHandler);
+  }
+
+  #setDatepickerDateFrom = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/Y h:m',
+        defaultDate: this._data.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+      },
+    );
+  }
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateFrom: userDate,
+    });
+  }
+
+  #setDatepickerDateTo = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/Y h:m',
+        defaultDate: this._data.dateTo,
+        onChange: this.#dateToChangeHandler,
+      },
+    );
+  }
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateTo: userDate,
+    });
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
   }
 
   static parsePointToData = (point) => ({...point,
@@ -265,7 +321,7 @@ export default class SiteEditView extends SmartView {
     isOffers: point.offers.offers.length > 0,
   });
 
-  static parseDataToTask = (data) => {
+  static parseDataToPoint = (data) => {
     const point = {...data};
 
     if(!point.isDestinationDescription) {

@@ -60,12 +60,14 @@ export default class PointPresenter {
   #closeEditKeydownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceEditFormToPoint();
     }
   };
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceEditFormToPoint();
     }
   }
