@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 import {
   CITY_LIST,
@@ -56,12 +55,15 @@ const generateDestination = (nameCity) => ({
 });
 
 const getDate = (previousDate) => {
-  const daysGap = getRandomInteger(5, 0);
+  const daysGap =  getRandomInteger(5, 0);
   const hoursGap = getRandomInteger(5, 0);
   const minutesGap = getRandomInteger(60, 0);
 
+  previousDate.setDate(previousDate.getDate() + daysGap);
+  previousDate.setHours(previousDate.getHours() + hoursGap);
+  previousDate.getMinutes(previousDate.getMinutes() + minutesGap);
 
-  return previousDate.add(daysGap, 'days').add(hoursGap, 'hours').add(minutesGap, 'minutes');
+  return previousDate;
 };
 
 const createOfferObj = (id) => ({
@@ -86,9 +88,10 @@ const generateOffer = (type) => ({
 
 const getPointObj = (dateStart, nameCity) => {
   const currentType = getRandomType();
-  dateStart = dateStart === null ? dayjs() : dateStart;
+  dateStart = dateStart === null ? new Date() : dateStart;
   const dateFrom = getDate(dateStart);
-  const dateTo = getDate(dateFrom);
+  const dateEnd = new Date(dateFrom.valueOf());
+  const dateTo = getDate(dateEnd);
 
   return {
     id: nanoid(),

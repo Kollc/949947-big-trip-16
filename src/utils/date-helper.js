@@ -9,7 +9,7 @@ const getDurationDate = (from, to) => {
   const result = [];
 
   dayjs.extend(duration);
-  const durationDate = dayjs.duration(toDate.diff(fromDate));
+  const durationDate = dayjs.duration(fromDate.diff(toDate));
 
   const dateValues = new Map([
     ['D', durationDate.days()],

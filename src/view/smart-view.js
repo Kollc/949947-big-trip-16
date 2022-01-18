@@ -5,7 +5,7 @@ export default class SmartView extends AbstractView {
   _destination = {}
   _offers = {}
 
-  updateData = (update, justDataUpdating) => {
+  updateData = (update, justDataUpdating = false) => {
     if (!update) {
       return;
     }

@@ -188,16 +188,19 @@ const createSiteEditTemplate = (point) => {
 
 export default class SiteEditView extends SmartView {
   #datepicker = null;
+  #dateMin = null;
 
   constructor(point = BLANK_POINT, offers = {}, destinations = {}) {
     super();
     this._offers = offers;
     this._destinations = destinations;
     this._data = SiteEditView.parsePointToData(point);
+    this.#dateMin = this._data.dateFrom;
 
+    // TODO: Надо чтоб DateMin обновлялся в DatePickereEnd  , когда выбирается дата в DatePickerMin
     this.#setInnerHandlers();
-    this.#setDatepickerDateFrom();
-    this.#setDatepickerDateTo();
+    this.#setDatepicker('#event-start-time-1', this._data.dateFrom, this.#dateFromChangeHandler);
+    this.#setDatepicker('#event-end-time-1', this._data.dateTo, this.#dateToChangeHandler, this.#dateMin);
   }
 
   #setInnerHandlers = () => {
@@ -213,8 +216,8 @@ export default class SiteEditView extends SmartView {
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
-    this.#setDatepickerDateFrom();
-    this.#setDatepickerDateTo();
+    this.#setDatepicker('#event-start-time-1', this._data.dateFrom, this.#dateFromChangeHandler);
+    this.#setDatepicker('#event-end-time-1', this._data.dateTo, this.#dateToChangeHandler, this.#dateMin);
     this.setEditSubmitHandler(this._callback.submit);
     this.setCloseEditClickHandler(this._callback.clickClose);
   }
@@ -272,47 +275,46 @@ export default class SiteEditView extends SmartView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editCloseClickHandler);
   }
 
-  #setDatepickerDateFrom = () => {
+  #setDatepicker= (selector, dateState, callback, minDate = new Date()) => {
     this.#datepicker = flatpickr(
-      this.element.querySelector('#event-start-time-1'),
+      this.element.querySelector(selector),
       {
-        dateFormat: 'd/m/Y h:m',
-        defaultDate: this._data.dateFrom,
-        onChange: this.#dateFromChangeHandler,
+        dateFormat: 'd/m/Y H:i',
+        enableTime: true,
+        defaultDate: dateState,
+        onChange: callback,
+        minDate,
       },
     );
   }
 
   #dateFromChangeHandler = ([userDate]) => {
+    this.#dateMin = userDate;
+    this.#destroyDatepicker();
+    this.#setDatepicker('#event-end-time-1', this._data.dateTo, this.#dateToChangeHandler, this.#dateMin);
+
     this.updateData({
       dateFrom: userDate,
-    });
-  }
-
-  #setDatepickerDateTo = () => {
-    this.#datepicker = flatpickr(
-      this.element.querySelector('#event-end-time-1'),
-      {
-        dateFormat: 'd/m/Y h:m',
-        defaultDate: this._data.dateTo,
-        onChange: this.#dateToChangeHandler,
-      },
-    );
+    }, true);
   }
 
   #dateToChangeHandler = ([userDate]) => {
     this.updateData({
       dateTo: userDate,
-    });
+    }, true);
   }
 
   removeElement = () => {
     super.removeElement();
 
     if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
+      this.#destroyDatepicker();
     }
+  }
+
+  #destroyDatepicker = () => {
+    this.#datepicker.destroy();
+    this.#datepicker = null;
   }
 
   static parsePointToData = (point) => ({...point,
