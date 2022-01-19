@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 import {
   CITY_LIST,
@@ -49,19 +48,24 @@ const getRandomCity = () => (CITY_LIST[getRandomInteger(0, CITY_LIST.length - 1)
 
 const getRandomType = () => (POINT_TYPE_LIST[getRandomInteger(0, POINT_TYPE_LIST.length - 1)]);
 
-const generateDestination = () => ({
+const generateDestination = (nameCity) => ({
   description: getRandomDescription(DESTINATION_DESCRIPTION, getRandomInteger(0, MAX_COUNT_DESCRIPTION)),
-  name: getRandomCity(),
+  name: nameCity,
   pictures: getPhotoDestinationObjList(getRandomInteger(1, 5))
 });
 
 const getDate = (previousDate) => {
-  const daysGap = getRandomInteger(5, 0);
+  const tmpDate = new Date(previousDate.valueOf());
+
+  const daysGap =  getRandomInteger(5, 0);
   const hoursGap = getRandomInteger(5, 0);
   const minutesGap = getRandomInteger(60, 0);
 
+  tmpDate.setDate(tmpDate.getDate() + daysGap);
+  tmpDate.setHours(tmpDate.getHours() + hoursGap);
+  tmpDate.getMinutes(tmpDate.getMinutes() + minutesGap);
 
-  return previousDate.add(daysGap, 'days').add(hoursGap, 'hours').add(minutesGap, 'minutes');
+  return tmpDate;
 };
 
 const createOfferObj = (id) => ({
@@ -84,18 +88,19 @@ const generateOffer = (type) => ({
   offers: getOffersList()
 });
 
-const getPointObj = (dateStart) => {
+const getPointObj = (dateStart, nameCity) => {
   const currentType = getRandomType();
-  dateStart = dateStart === null ? dayjs() : dateStart;
+  dateStart ||= new Date();
   const dateFrom = getDate(dateStart);
-  const dateTo = getDate(dateFrom);
+  const dateEnd = new Date(dateFrom.valueOf());
+  const dateTo = getDate(dateEnd);
 
   return {
     id: nanoid(),
     basePrice: getRandomInteger(1100, 11200),
     dateFrom,
     dateTo,
-    destination: generateDestination(),
+    destination: generateDestination(nameCity),
     isFavorite: Boolean(getRandomInteger()),
     offers: generateOffer(currentType),
     type: currentType
@@ -107,7 +112,7 @@ const getPoints = () => {
 
   for (let i = 0; i < 20; i++) {
     if (result[i - 1]) {
-      result.push(getPointObj(result[i - 1].dateFrom));
+      result.push(getPointObj(result[i - 1].dateTo, getRandomCity()));
     } else {
       result.push(getPointObj(null));
     }
@@ -116,6 +121,27 @@ const getPoints = () => {
   return result;
 };
 
+const allOffers = () => {
+  const offers  = new Map();
+  POINT_TYPE_LIST.forEach((type) => {
+    offers.set(type, generateOffer(type));
+  });
+
+  return offers;
+};
+
+const allDestinitions = () => {
+  const destinations  = new Map();
+
+  CITY_LIST.forEach((city) => {
+    destinations.set(city, generateDestination(city));
+  });
+
+  return destinations;
+};
+
 export {
-  getPoints
+  getPoints,
+  allOffers,
+  allDestinitions
 };
