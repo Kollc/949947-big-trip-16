@@ -55,15 +55,17 @@ const generateDestination = (nameCity) => ({
 });
 
 const getDate = (previousDate) => {
+  const tmpDate = new Date(previousDate.valueOf());
+
   const daysGap =  getRandomInteger(5, 0);
   const hoursGap = getRandomInteger(5, 0);
   const minutesGap = getRandomInteger(60, 0);
 
-  previousDate.setDate(previousDate.getDate() + daysGap);
-  previousDate.setHours(previousDate.getHours() + hoursGap);
-  previousDate.getMinutes(previousDate.getMinutes() + minutesGap);
+  tmpDate.setDate(tmpDate.getDate() + daysGap);
+  tmpDate.setHours(tmpDate.getHours() + hoursGap);
+  tmpDate.getMinutes(tmpDate.getMinutes() + minutesGap);
 
-  return previousDate;
+  return tmpDate;
 };
 
 const createOfferObj = (id) => ({
@@ -88,7 +90,7 @@ const generateOffer = (type) => ({
 
 const getPointObj = (dateStart, nameCity) => {
   const currentType = getRandomType();
-  dateStart = dateStart === null ? new Date() : dateStart;
+  dateStart ||= new Date();
   const dateFrom = getDate(dateStart);
   const dateEnd = new Date(dateFrom.valueOf());
   const dateTo = getDate(dateEnd);
@@ -110,7 +112,7 @@ const getPoints = () => {
 
   for (let i = 0; i < 20; i++) {
     if (result[i - 1]) {
-      result.push(getPointObj(result[i - 1].dateFrom, getRandomCity()));
+      result.push(getPointObj(result[i - 1].dateTo, getRandomCity()));
     } else {
       result.push(getPointObj(null));
     }
