@@ -7,7 +7,7 @@ import {
   remove,
 } from '../utils/render';
 
-import { Mode } from '../consts';
+import { Mode , UserAction, UpdateType } from '../consts';
 import { allDestinitions, allOffers } from '../mock/point';
 
 export default class PointPresenter {
@@ -33,8 +33,9 @@ export default class PointPresenter {
     this.#pointComponent = new SitePointView(this.#point);
     this.#pointEditComponent = new SiteEditView(this.#point, allOffers(), allDestinitions());
 
-    this.#setOpenEditClickHandler();
-    this.#setAddFavoriteClickHandler();
+    this.#pointComponent.setOpenEditClickHandler(this.#openEditClickHandler);
+    this.#pointComponent.setAddFavoriteClickHandler(this.#addFavoriteClickHandler);
+    this.#pointEditComponent.setDeleteClickHandler(this.#deleteClickHandler);
 
     if (pointComponent === null || pointEditComponent === null) {
       this.#renderPoint();
@@ -77,17 +78,26 @@ export default class PointPresenter {
     remove(this.#pointEditComponent);
   }
 
-  #setOpenEditClickHandler = () => {
-    this.#pointComponent.setOpenEditClickHandler(() => {
-      this.#replacePointToEditForm();
-    });
+  #openEditClickHandler = () => {
+    this.#replacePointToEditForm();
   }
 
-  #setAddFavoriteClickHandler = () => {
-    this.#pointComponent.setAddFavoriteClickHandler(() => {
-      const updatePoint = {...this.#point, isFavorite: !this.#point.isFavorite};
-      this.#changeData(updatePoint);
-    });
+  #addFavoriteClickHandler = () => {
+    const updatePoint = {...this.#point, isFavorite: !this.#point.isFavorite};
+    this.#changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, updatePoint);
+  }
+
+  #deleteClickHandler = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  }
+
+  #editSubmitHandler = (point) => {
+    this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, point);
+    this.#replaceEditFormToPoint();
   }
 
   #replacePointToEditForm = () => {
@@ -100,9 +110,7 @@ export default class PointPresenter {
       this.#replaceEditFormToPoint();
     });
 
-    this.#pointEditComponent.setEditSubmitHandler(() => {
-      this.#replaceEditFormToPoint();
-    });
+    this.#pointEditComponent.setEditSubmitHandler(this.#editSubmitHandler);
 
     this.#changeMode();
     this.#mode = Mode.EDITING;
