@@ -88,9 +88,9 @@ const generateOffer = (type) => ({
   offers: getOffersList()
 });
 
-const getPointObj = (dateStart, nameCity) => {
+const getPointObj = (dateStart, nameCity = getRandomCity()) => {
   const currentType = getRandomType();
-  dateStart ||= new Date();
+  dateStart ||= new Date('2022-01-10T03:24:00');
   const dateFrom = getDate(dateStart);
   const dateEnd = new Date(dateFrom.valueOf());
   const dateTo = getDate(dateEnd);
@@ -112,7 +112,7 @@ const getPoints = () => {
 
   for (let i = 0; i < 20; i++) {
     if (result[i - 1]) {
-      result.push(getPointObj(result[i - 1].dateTo, getRandomCity()));
+      result.push(getPointObj(result[i - 1].dateTo));
     } else {
       result.push(getPointObj(null));
     }
