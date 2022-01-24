@@ -8,7 +8,7 @@ export default class PointModel extends AbstractObservable {
   }
 
   get points() {
-    return this.#points;
+    return [...this.#points];
   }
 
   updatePoint = (updateType, update) => {

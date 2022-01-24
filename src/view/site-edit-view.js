@@ -173,7 +173,7 @@ const createSiteEditTemplate = (point) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -192,7 +192,6 @@ const createSiteEditTemplate = (point) => {
 export default class SiteEditView extends SmartView {
   #datepickerDateTo = null;
   #datepickerDateFrom = null;
-  #basePrice = null;
   #destinationName = null;
   #priceInputElement = null;
 
@@ -201,7 +200,6 @@ export default class SiteEditView extends SmartView {
     this._offers = offers;
     this._destinations = destinations;
     this._data = SiteEditView.parsePointToData(point);
-    this.#basePrice = this._data.basePrice;
     this.#destinationName = this._data.destination.name;
     this.#priceInputElement = this.element.querySelector('.event__input--price');
 
@@ -213,7 +211,7 @@ export default class SiteEditView extends SmartView {
   #setInnerHandlers = () => {
     this.element.querySelectorAll('.event__type-label').forEach((item) => item.addEventListener('click', this.#typeTripClickHandler));
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.#priceInputElement.addEventListener('input', this.#basePriceInputHandler);
+    this.#priceInputElement.addEventListener('change', this.#basePriceChangeHandler);
   }
 
   reset = (point) => {
@@ -263,13 +261,8 @@ export default class SiteEditView extends SmartView {
     });
   }
 
-  #basePriceInputHandler = (evt) => {
+  #basePriceChangeHandler = (evt) => {
     evt.preventDefault();
-    if(evt.target.value.match('^[ 0-9]+$') || evt.target.value === '') {
-      this.#basePrice = evt.target.value;
-    }
-
-    this.#priceInputElement.value = this.#basePrice;
 
     this.updateData({
       basePrice: evt.target.value,

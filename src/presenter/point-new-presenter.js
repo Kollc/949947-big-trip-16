@@ -1,4 +1,4 @@
-import TaskEditView from '../view/site-edit-view';
+import SiteEditView from '../view/site-edit-view';
 import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render';
 import {UserAction, UpdateType} from './../consts';
@@ -18,7 +18,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#pointEditComponent = new TaskEditView();
+    this.#pointEditComponent = new SiteEditView();
     this.#pointEditComponent.setEditSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
