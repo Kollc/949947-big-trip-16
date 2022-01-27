@@ -67,7 +67,12 @@ const ChartConfigs = {
   BAR_THICKNESS: 44,
   PADDING: 5,
   MIN_BAR_LENGTH: 50,
-  PADDING_LEFT: 35
+  PADDING_LEFT: 35,
+  ANCHOR_DATA: 'start',
+  ANCHOR_DATA_LABELS: 'end',
+  ANCHOR: 'end',
+  ALIGN: 'start',
+  POSITION: 'left',
 };
 
 const BAR_HEIGHT = 55;

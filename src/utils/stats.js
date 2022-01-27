@@ -4,6 +4,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { BAR_HEIGHT, POINT_TYPE_LIST } from '../consts.js';
 import { getTypesCount, getTypesMoney, getTypesTimeDuration } from '../utils/common.js';
 import { getDurationDate } from '../utils/date-helper.js';
+import { ChartConfigs } from '../consts.js';
 
 export const moneyChartRender = (moneyCtx, points) => {
   moneyCtx.height = BAR_HEIGHT * points.length / 2;
@@ -11,16 +12,16 @@ export const moneyChartRender = (moneyCtx, points) => {
 
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
+    type: ChartConfigs.TYPE,
     data: {
       labels: POINT_TYPE_LIST,
       datasets: [{
         data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
-        barThickness: 44,
-        minBarLength: 50,
+        backgroundColor: ChartConfigs.BACKGROUND_COLOR,
+        hoverBackgroundColor: ChartConfigs.BACKGROUND_COLOR,
+        anchor: ChartConfigs.ANCHOR_DATA,
+        barThickness: ChartConfigs.BAR_THICKNESS,
+        minBarLength: ChartConfigs.MIN_BAR_LENGTH,
       }],
     },
     options: {
@@ -28,27 +29,27 @@ export const moneyChartRender = (moneyCtx, points) => {
       plugins: {
         datalabels: {
           font: {
-            size: 13,
+            size: ChartConfigs.FONT_SIZE,
           },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `€ ${val}`,
+          color: ChartConfigs.COLOR,
+          anchor: ChartConfigs.ANCHOR_DATA_LABELS,
+          align: ChartConfigs.ALIGN,
+          formatter: (cost) => `€ ${cost}`,
         },
       },
       title: {
         display: true,
-        text: 'MONEY',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
+        text: ChartConfigs.MONEY_CHART_TITLE,
+        fontColor: ChartConfigs.COLOR,
+        fontSize: ChartConfigs.TITLE_FONT_SIZE,
+        position: ChartConfigs.POSITION,
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#000000',
-            padding: 5,
-            fontSize: 13,
+            fontColor: ChartConfigs.COLOR,
+            padding: ChartConfigs.PADDING,
+            fontSize: ChartConfigs.FONT_SIZE,
           },
           gridLines: {
             display: false,
@@ -82,16 +83,16 @@ export const typeChartRender = (typeCtx, points) => {
 
   return new Chart(typeCtx, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
+    type: ChartConfigs.TYPE,
     data: {
       labels: POINT_TYPE_LIST,
       datasets: [{
         data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
-        barThickness: 44,
-        minBarLength: 50,
+        backgroundColor: ChartConfigs.BACKGROUND_COLOR,
+        hoverBackgroundColor: ChartConfigs.BACKGROUND_COLOR,
+        anchor: ChartConfigs.ANCHOR_DATA,
+        barThickness: ChartConfigs.BAR_THICKNESS,
+        minBarLength: ChartConfigs.MIN_BAR_LENGTH,
       }],
     },
     options: {
@@ -99,27 +100,27 @@ export const typeChartRender = (typeCtx, points) => {
       plugins: {
         datalabels: {
           font: {
-            size: 13,
+            size: ChartConfigs.FONT_SIZE,
           },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `${val}x`,
+          color: ChartConfigs.COLOR,
+          anchor: ChartConfigs.ANCHOR_DATA_LABELS,
+          align: ChartConfigs.ALIGN,
+          formatter: (count) => `${count}x`,
         },
       },
       title: {
         display: true,
-        text: 'TYPE',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
+        text: ChartConfigs.TRANSPORT_CHART_TITLE,
+        fontColor: ChartConfigs.COLOR,
+        fontSize: ChartConfigs.TITLE_FONT_SIZE,
+        position: ChartConfigs.POSITION,
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#000000',
-            padding: 5,
-            fontSize: 13,
+            fontColor: ChartConfigs.COLOR,
+            padding: ChartConfigs.PADDING,
+            fontSize: ChartConfigs.FONT_SIZE,
           },
           gridLines: {
             display: false,
@@ -154,16 +155,16 @@ export const timeChartRender = (typeCtx, points) => {
 
   return new Chart(typeCtx, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
+    type: ChartConfigs.TYPE,
     data: {
       labels: POINT_TYPE_LIST,
       datasets: [{
         data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
-        barThickness: 44,
-        minBarLength: 50,
+        backgroundColor: ChartConfigs.BACKGROUND_COLOR,
+        hoverBackgroundColor: ChartConfigs.BACKGROUND_COLOR,
+        anchor: ChartConfigs.ANCHOR_DATA,
+        barThickness: ChartConfigs.BAR_THICKNESS,
+        minBarLength: ChartConfigs.MIN_BAR_LENGTH,
       }],
     },
     options: {
@@ -171,27 +172,27 @@ export const timeChartRender = (typeCtx, points) => {
       plugins: {
         datalabels: {
           font: {
-            size: 13,
+            size: ChartConfigs.FONT_SIZE,
           },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `${getDurationDate(val)}`,
+          color: ChartConfigs.COLOR,
+          anchor: ChartConfigs.ANCHOR_DATA_LABELS,
+          align: ChartConfigs.ALIGN,
+          formatter: (duration) => `${getDurationDate(duration)}`,
         },
       },
       title: {
         display: true,
-        text: 'TIME',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
+        text: ChartConfigs.TIME_SPEND_CHART_TITLE,
+        fontColor: ChartConfigs.COLOR,
+        fontSize: ChartConfigs.TITLE_FONT_SIZE,
+        position: ChartConfigs.POSITION,
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#000000',
-            padding: 5,
-            fontSize: 13,
+            fontColor: ChartConfigs.COLOR,
+            padding: ChartConfigs.PADDING,
+            fontSize: ChartConfigs.FONT_SIZE,
           },
           gridLines: {
             display: false,
