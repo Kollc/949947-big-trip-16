@@ -47,6 +47,8 @@ const FilterType = {
   PAST: 'Past',
 };
 
+const DEFAULT_TYPE = 'taxi';
+
 export {
   CITY_LIST,
   POINT_TYPE_LIST,
@@ -59,4 +61,5 @@ export {
   UserAction,
   UpdateType,
   FilterType,
+  DEFAULT_TYPE
 };

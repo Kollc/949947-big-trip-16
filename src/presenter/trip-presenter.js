@@ -30,13 +30,15 @@ export default class TripPresenter {
   #filterType = FilterType.EVERYTHING;
   #pointNewPresenter = null;
 
-  constructor(navigationContainerElement, tripSectionElement, pointsModel, filterModel) {
+  constructor(navigationContainerElement, tripSectionElement, pointsModel, filterModel, offersModel, destinationsModel) {
     this.#navigationContainerElement = navigationContainerElement;
     this.#tripSectionElement = tripSectionElement;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this._offersModel = offersModel;
+    this.destinationsModel = destinationsModel;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction);
+    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction, this._offersModel, this.destinationsModel);
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -56,10 +58,10 @@ export default class TripPresenter {
     }
   }
 
-  createPoint = () => {
+  createPoint = (point) => {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init();
+    this.#pointNewPresenter.init(point);
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -170,7 +172,7 @@ export default class TripPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter =  new PointPresenter(this.#tripListContainerElement, this.#handleViewAction, this.#handleModeChange);
+    const pointPresenter =  new PointPresenter(this.#tripListContainerElement, this.#handleViewAction, this.#handleModeChange, this._offersModel.getOffers(), this.destinationsModel.getDestinations());
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }

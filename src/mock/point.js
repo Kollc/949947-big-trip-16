@@ -88,6 +88,29 @@ const generateOffer = (type) => ({
   offers: getOffersList()
 });
 
+const allOffers = () => {
+  const offers  = new Map();
+  POINT_TYPE_LIST.forEach((type) => {
+    offers.set(type, generateOffer(type));
+  });
+
+  return offers;
+};
+
+const OFFERS_LIST = allOffers();
+
+const allDestinitions = () => {
+  const destinations  = new Map();
+
+  CITY_LIST.forEach((city) => {
+    destinations.set(city, generateDestination(city));
+  });
+
+  return destinations;
+};
+
+const ALL_DESTINATIONS_LIST = allDestinitions();
+
 const getPointObj = (dateStart, nameCity = getRandomCity()) => {
   const currentType = getRandomType();
   dateStart ||= new Date('2022-01-10T03:24:00');
@@ -100,9 +123,9 @@ const getPointObj = (dateStart, nameCity = getRandomCity()) => {
     basePrice: getRandomInteger(1100, 11200),
     dateFrom,
     dateTo,
-    destination: generateDestination(nameCity),
+    destination: ALL_DESTINATIONS_LIST.get(nameCity),
     isFavorite: Boolean(getRandomInteger()),
-    offers: generateOffer(currentType),
+    offers: OFFERS_LIST.get(currentType),
     type: currentType
   };
 };
@@ -121,27 +144,9 @@ const getPoints = () => {
   return result;
 };
 
-const allOffers = () => {
-  const offers  = new Map();
-  POINT_TYPE_LIST.forEach((type) => {
-    offers.set(type, generateOffer(type));
-  });
-
-  return offers;
-};
-
-const allDestinitions = () => {
-  const destinations  = new Map();
-
-  CITY_LIST.forEach((city) => {
-    destinations.set(city, generateDestination(city));
-  });
-
-  return destinations;
-};
 
 export {
   getPoints,
-  allOffers,
-  allDestinitions
+  OFFERS_LIST,
+  ALL_DESTINATIONS_LIST,
 };
