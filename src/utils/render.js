@@ -1,4 +1,4 @@
-import AbstractView from './../view/abstract-view';
+import AbstractView from '../view/site-abstract-view';
 
 const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',

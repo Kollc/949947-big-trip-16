@@ -5,7 +5,7 @@ import {
   dateMonthDay,
 } from './../utils/date-helper';
 
-import AbstractView from './abstract-view.js';
+import SiteAbstractView from './site-abstract-view.js';
 import he from 'he';
 
 const createSitePointTemplate = (point) => {
@@ -83,7 +83,7 @@ const createSitePointTemplate = (point) => {
 };
 
 
-export default class SitePointView extends AbstractView {
+export default class SitePointView extends SiteAbstractView {
   #point = null;
 
   constructor(point) {

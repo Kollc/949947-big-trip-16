@@ -1,6 +1,6 @@
-import AbstractView from './abstract-view.js';
+import AbstractView from './site-abstract-view.js';
 
-export default class SmartView extends AbstractView {
+export default class SiteSmartView extends AbstractView {
   _data = {};
   _destination = {}
   _offers = {}

@@ -9,7 +9,7 @@ import {
   POINT_TYPE_LIST,
 } from './../consts.js';
 
-import SmartView from './smart-view';
+import SmartView from './site-smart-view';
 
 import flatpickr from 'flatpickr';
 

@@ -18,7 +18,7 @@ export default class PointNewPresenter {
     this.#changeData = changeData;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
-    this.#defaultNewOffers = this.#offersModel.getOffers().get(DEFAULT_TYPE);
+    this.#defaultNewOffers = this.#offersModel.offers.get(DEFAULT_TYPE);
     this.#defaultNewDestinations = this.#getCityForNewPoint();
   }
 
@@ -27,7 +27,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#pointEditComponent = new SiteEditView(getNewPoint(this.#defaultNewDestinations, this.#defaultNewOffers) ,this.#offersModel.getOffers(), this.#destinationsModel.getDestinations());
+    this.#pointEditComponent = new SiteEditView(getNewPoint(this.#defaultNewDestinations, this.#defaultNewOffers) ,this.#offersModel.offers, this.#destinationsModel.destinations);
     this.#pointEditComponent.setEditSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
@@ -48,7 +48,7 @@ export default class PointNewPresenter {
   }
 
   #getCityForNewPoint = () => {
-    for (const cityName of this.#destinationsModel.getDestinations().values()) {
+    for (const cityName of this.#destinationsModel.destinations.values()) {
       return cityName;
     }
   }
