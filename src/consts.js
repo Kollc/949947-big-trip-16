@@ -70,6 +70,8 @@ const ChartConfigs = {
   PADDING_LEFT: 35
 };
 
+const BAR_HEIGHT = 55;
+
 
 export {
   CITY_LIST,
@@ -85,5 +87,6 @@ export {
   FilterType,
   DEFAULT_TYPE,
   MenuItem,
-  ChartConfigs
+  ChartConfigs,
+  BAR_HEIGHT
 };
