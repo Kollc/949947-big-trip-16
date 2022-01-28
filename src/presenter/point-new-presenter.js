@@ -1,16 +1,25 @@
 import SiteEditView from '../view/site-edit-view';
 import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render';
-import {UserAction, UpdateType} from './../consts';
+import {UserAction, UpdateType, DEFAULT_TYPE} from './../consts';
+import { getNewPoint } from '../utils/common';
 
 export default class PointNewPresenter {
   #pointsListContainer = null;
   #changeData = null;
   #pointEditComponent = null;
+  #offersModel = null;
+  #destinationsModel = null;
+  #defaultNewOffers = null;
+  #defaultNewDestinations = null;
 
-  constructor(pointsListContainer, changeData) {
+  constructor(pointsListContainer, changeData, offersModel, destinationsModel) {
     this.#pointsListContainer = pointsListContainer;
     this.#changeData = changeData;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
+    this.#defaultNewOffers = this.#offersModel.offers.get(DEFAULT_TYPE);
+    this.#defaultNewDestinations = this.#getCityForNewPoint();
   }
 
   init = () => {
@@ -18,7 +27,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#pointEditComponent = new SiteEditView();
+    this.#pointEditComponent = new SiteEditView(getNewPoint(this.#defaultNewDestinations, this.#defaultNewOffers) ,this.#offersModel.offers, this.#destinationsModel.destinations);
     this.#pointEditComponent.setEditSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
@@ -36,6 +45,12 @@ export default class PointNewPresenter {
     this.#pointEditComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  #getCityForNewPoint = () => {
+    for (const cityName of this.#destinationsModel.destinations.values()) {
+      return cityName;
+    }
   }
 
   #handleFormSubmit = (point) => {

@@ -47,6 +47,37 @@ const FilterType = {
   PAST: 'Past',
 };
 
+const DEFAULT_TYPE = 'taxi';
+
+const MenuItem = {
+  TABLE: 'Table',
+  STATS: 'Stats'
+};
+
+const ChartConfigs = {
+  TYPE: 'horizontalBar',
+  BACKGROUND_COLOR: '#ffffff',
+  BAR_HEIGHT: 55,
+  FONT_SIZE: 13,
+  TITLE_FONT_SIZE: 23,
+  MONEY_CHART_TITLE: 'MONEY',
+  TRANSPORT_CHART_TITLE: 'TYPE',
+  TIME_SPEND_CHART_TITLE: 'TIME-SPEND',
+  COLOR: '#000000',
+  BAR_THICKNESS: 44,
+  PADDING: 5,
+  MIN_BAR_LENGTH: 50,
+  PADDING_LEFT: 35,
+  ANCHOR_DATA: 'start',
+  ANCHOR_DATA_LABELS: 'end',
+  ANCHOR: 'end',
+  ALIGN: 'start',
+  POSITION: 'left',
+};
+
+const BAR_HEIGHT = 55;
+
+
 export {
   CITY_LIST,
   POINT_TYPE_LIST,
@@ -59,4 +90,8 @@ export {
   UserAction,
   UpdateType,
   FilterType,
+  DEFAULT_TYPE,
+  MenuItem,
+  ChartConfigs,
+  BAR_HEIGHT
 };

@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import SiteAbstractView from './site-abstract-view.js';
 import { FilterType } from '../consts.js';
 
 const NoTasksTextType = {
@@ -16,7 +16,7 @@ const createSiteEmptyTemplate = (filterType) => {
     </p>`);
 };
 
-export default class SiteEmptyView extends AbstractView {
+export default class SiteEmptyView extends SiteAbstractView {
   constructor(data) {
     super();
     this._data = data;

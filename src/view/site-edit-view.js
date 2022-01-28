@@ -9,22 +9,13 @@ import {
   POINT_TYPE_LIST,
 } from './../consts.js';
 
-import SmartView from './smart-view';
+import SmartView from './site-smart-view';
 
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import { allDestinitions, allOffers } from '../mock/point';
 import he from 'he';
-
-const BLANK_POINT = {
-  basePrice: 0,
-  dateFrom: new Date(),
-  dateTo: new Date(),
-  destination: allDestinitions().get(CITY_LIST[0]),
-  offers: allOffers().get(POINT_TYPE_LIST[0]),
-  type: 'bus',
-};
+import { changeInMapTitleToKey } from '../utils/common';
 
 const createEventTypeListTemplate = () => {
   if (POINT_TYPE_LIST) {
@@ -45,18 +36,16 @@ const createEventTypeListTemplate = () => {
   return '';
 };
 
-const createOffersListTemplate = (offersContainer, isOffers) => {
+const createOffersListTemplate = (offersContainer, isOffers, offersList) => {
+  const offersAll = changeInMapTitleToKey(offersList.offers);
+  const offersChecked = changeInMapTitleToKey(offersContainer.offers);
 
   if (isOffers) {
-    const {
-      offers
-    } = offersContainer;
-
     const result = [];
 
-    offers.forEach(({title, id, price}) => {
+    offersAll.forEach(({id, price}, title) => {
       result.push(`<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-${id}" type="checkbox" name="event-offer-${title}">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-${id}" value="${title}" type="checkbox" name="event-offer-${title}" ${offersChecked.has(title) ? 'checked' : ''}>
           <label class="event__offer-label" for="event-offer-${title}-${id}">
             <span class="event__offer-title">${he.encode(title)}</span>
             &plus;&euro;&nbsp;
@@ -134,7 +123,7 @@ const createDateTimeInputTemplate = (dateTo, dateFrom) => (
   </div>`
 );
 
-const createSiteEditTemplate = (point) => {
+const createSiteEditTemplate = (point, offersList) => {
   const {
     basePrice,
     dateFrom,
@@ -183,7 +172,7 @@ const createSiteEditTemplate = (point) => {
     </button>
   </header>
   <section class="event__details">
-      ${createOffersListTemplate(offersContainer, isOffers)}
+      ${createOffersListTemplate(offersContainer, isOffers, offersList)}
       ${createDestinationDescriptionTemplate(destination, isDestinationDescription, isDestinationPictures)}
   </section>
 </form>`);
@@ -195,11 +184,11 @@ export default class SiteEditView extends SmartView {
   #destinationName = null;
   #priceInputElement = null;
 
-  constructor(point = BLANK_POINT, offers = allOffers(), destinations = allDestinitions()) {
+  constructor(point, offers, destinations) {
     super();
     this._offers = offers;
     this._destinations = destinations;
-    this._data = SiteEditView.parsePointToData(point);
+    this._data = SiteEditView.parsePointToData(point, this._offers);
     this.#destinationName = this._data.destination.name;
     this.#priceInputElement = this.element.querySelector('.event__input--price');
 
@@ -209,6 +198,7 @@ export default class SiteEditView extends SmartView {
   }
 
   #setInnerHandlers = () => {
+    this.element.querySelectorAll('.event__offer-selector input').forEach((item) => item.addEventListener('change', this.#offerChangeHandler));
     this.element.querySelectorAll('.event__type-label').forEach((item) => item.addEventListener('click', this.#typeTripClickHandler));
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.#priceInputElement.addEventListener('change', this.#basePriceChangeHandler);
@@ -216,7 +206,7 @@ export default class SiteEditView extends SmartView {
 
   reset = (point) => {
     this.updateData(
-      SiteEditView.parsePointToData(point),
+      SiteEditView.parsePointToData(point, this._offers),
     );
   }
 
@@ -230,7 +220,8 @@ export default class SiteEditView extends SmartView {
   }
 
   get template() {
-    return createSiteEditTemplate(this._data);
+    const offersListPoint = this._offers.get(this._data.type);
+    return createSiteEditTemplate(this._data, offersListPoint);
   }
 
   #typeTripClickHandler = (evt) => {
@@ -242,6 +233,32 @@ export default class SiteEditView extends SmartView {
       offers: {
         type: changedValue,
         offers: this._offers.get(changedValue).offers
+      }
+    });
+  }
+
+  #offerChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    const changedValue = evt.target.value;
+    const currentOffers = changeInMapTitleToKey(this._data.offers.offers);
+    const originOffers = changeInMapTitleToKey(this._offers.get(this._data.type).offers);
+    const newOffersList = [];
+
+    if(!evt.target.checked) {
+      currentOffers.delete(changedValue);
+    } else {
+      currentOffers.set(changedValue, originOffers.get(changedValue));
+    }
+
+    currentOffers.forEach(({id, price}, title) => {
+      const element = {id, title, price};
+      newOffersList.push(element);
+    });
+
+    this.updateData({
+      offers: {
+        offers: newOffersList,
       }
     });
   }
@@ -371,11 +388,14 @@ export default class SiteEditView extends SmartView {
     this.#datepickerDateFrom = null;
   }
 
-  static parsePointToData = (point) => ({...point,
-    isDestinationDescription: point.destination.description !== '',
-    isDestinationPictures: point.destination.pictures && point.destination.pictures.length > 0,
-    isOffers: point.offers && point.offers.offers.length > 0,
-  });
+  static parsePointToData = (point, originOffersList) => {
+    const offers = originOffersList.get(point.type).offers;
+    return {...point,
+      isDestinationDescription: point.destination.description !== '',
+      isDestinationPictures: point.destination.pictures && point.destination.pictures.length > 0,
+      isOffers: offers && offers.length  > 0,
+    };
+  };
 
   static parseDataToPoint = (data) => {
     const point = {...data};

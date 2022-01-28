@@ -1,13 +1,13 @@
 import {
   createElement
-} from './../utils/render';
+} from '../utils/render';
 
-export default class AbstractView {
+export default class SiteAbstractView {
   #element = null;
   _callback = {};
 
   constructor() {
-    if (this.evt === AbstractView) {
+    if (this.evt === SiteAbstractView) {
       throw new Error('Can\'t instantiate AbstractView, only concrete one.');
     }
   }

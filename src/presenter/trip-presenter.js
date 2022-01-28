@@ -4,7 +4,6 @@ import {
   remove,
 } from '../utils/render';
 
-import SiteMenuView from '../view/site-menu-view';
 import SiteSortView from '../view/site-sort-view';
 import SiteListView from '../view/site-list-view';
 import SiteEmptyView from '../view/site-empty-view';
@@ -17,7 +16,6 @@ import { filter } from '../utils/filter';
 import PointNewPresenter from './point-new-presenter';
 
 export default class TripPresenter {
-  #navigationContainerElement = null;
   #tripSectionElement = null;
   #tripListContainerElement = new SiteListView().element;
   #pointPresenter = new Map();
@@ -30,16 +28,14 @@ export default class TripPresenter {
   #filterType = FilterType.EVERYTHING;
   #pointNewPresenter = null;
 
-  constructor(navigationContainerElement, tripSectionElement, pointsModel, filterModel) {
-    this.#navigationContainerElement = navigationContainerElement;
+  constructor(tripSectionElement, pointsModel, filterModel, offersModel, destinationsModel) {
     this.#tripSectionElement = tripSectionElement;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this._offersModel = offersModel;
+    this.destinationsModel = destinationsModel;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction);
-
-    this.#pointsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction, this._offersModel, this.destinationsModel);
   }
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -56,10 +52,10 @@ export default class TripPresenter {
     }
   }
 
-  createPoint = () => {
+  createPoint = (callback) => {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init();
+    this.#pointNewPresenter.init(callback);
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -79,8 +75,15 @@ export default class TripPresenter {
   }
 
   init = () => {
-    render(this.#navigationContainerElement, new SiteMenuView(), RenderPosition.BEFOREEND);
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
     this.#renderTripContainer();
+  }
+
+  destroy = () => {
+    this.#clearTripContainer({resetRenderedTaskCount: true, resetSortType: true});
+    this.#pointsModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
   get points() {
@@ -170,7 +173,7 @@ export default class TripPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter =  new PointPresenter(this.#tripListContainerElement, this.#handleViewAction, this.#handleModeChange);
+    const pointPresenter =  new PointPresenter(this.#tripListContainerElement, this.#handleViewAction, this.#handleModeChange, this._offersModel.offers, this.destinationsModel.destinations);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }

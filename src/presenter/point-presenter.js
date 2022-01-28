@@ -8,7 +8,6 @@ import {
 } from '../utils/render';
 
 import { Mode , UserAction, UpdateType } from '../consts';
-import { allDestinitions, allOffers } from '../mock/point';
 
 export default class PointPresenter {
   #pointComponent = null;;
@@ -17,12 +16,16 @@ export default class PointPresenter {
   #changeData = null;
   #point = null;
   #changeMode = null;
+  #offers = null;
+  #destinations = null;
   #mode = Mode.DEFAULT
 
-  constructor(container, changeData, changeMode) {
+  constructor(container, changeData, changeMode, offers, destinations) {
     this.#container = container;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
   init = (point) => {
@@ -30,8 +33,8 @@ export default class PointPresenter {
     const pointEditComponent = this.#pointEditComponent;
 
     this.#point = point;
-    this.#pointComponent = new SitePointView(this.#point);
-    this.#pointEditComponent = new SiteEditView(this.#point, allOffers(), allDestinitions());
+    this.#pointComponent = new SitePointView(this.#point, this.#offers);
+    this.#pointEditComponent = new SiteEditView(this.#point, this.#offers, this.#destinations);
 
     this.#pointComponent.setOpenEditClickHandler(this.#openEditClickHandler);
     this.#pointComponent.setAddFavoriteClickHandler(this.#addFavoriteClickHandler);

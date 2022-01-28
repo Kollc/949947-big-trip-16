@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import SiteAbstractView from './site-abstract-view.js';
 import {
   SortType
 } from '../consts.js';
@@ -32,7 +32,7 @@ const createSiteSortTemplate = (currentSortType) => (
   </form>`
 );
 
-export default class SiteSortView extends AbstractView {
+export default class SiteSortView extends SiteAbstractView {
   #currentSortType = null;
 
   constructor(currentSortType) {

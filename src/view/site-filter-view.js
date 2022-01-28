@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import SiteAbstractView from './site-abstract-view.js';
 
 const createfilterTemplate = (filter, currentFilterType) => {
   const {type, name, count} = filter;
@@ -22,7 +22,7 @@ const createSiteFiltersTemplate = (filters, currentFilterType) => {
   );
 };
 
-export default class SiteFilterView extends AbstractView {
+export default class SiteFilterView extends SiteAbstractView {
   #filters = null;
   #currentFilter = null;
 

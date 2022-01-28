@@ -3,18 +3,13 @@ import duration from 'dayjs/plugin/duration';
 
 const convertDateHourseMinutes = (date) => dayjs(date).format('HH:mm');
 
-const getDurationDate = (from, to) => {
-  const fromDate = dayjs(from);
-  const toDate = dayjs(to);
+const formatedDate = (date) => {
   const result = [];
 
-  dayjs.extend(duration);
-  const durationDate = dayjs.duration(toDate.diff(fromDate));
-
   const dateValues = new Map([
-    ['D', durationDate.days()],
-    ['H', durationDate.hours()],
-    ['M', durationDate.minutes()],
+    ['D', date.days()],
+    ['H', date.hours()],
+    ['M', date.minutes()],
   ]);
 
   dateValues.forEach((value, key) => {
@@ -26,6 +21,16 @@ const getDurationDate = (from, to) => {
   return result.join(' ');
 };
 
+const getDurationDate = (from, to) => {
+  const fromDate = dayjs(from);
+  const toDate = dayjs(to);
+
+  dayjs.extend(duration);
+  const durationDate = dayjs.duration(toDate.diff(fromDate));
+
+  return formatedDate(durationDate);
+};
+
 const dateYearsMonthDay = (date) => dayjs(date).format('YYYY-MM-DD');
 const dateMonthDay = (date) => dayjs(date).format('MMM-DD');
 
@@ -34,4 +39,5 @@ export {
   getDurationDate,
   dateYearsMonthDay,
   dateMonthDay,
+  formatedDate
 };
