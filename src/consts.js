@@ -39,6 +39,9 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  OFFERS: 'OFFERS',
+  DESTINATIONS: 'DESTINATIONS',
 };
 
 const FilterType = {
@@ -48,6 +51,13 @@ const FilterType = {
 };
 
 const DEFAULT_TYPE = 'taxi';
+
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
 
 const MenuItem = {
   TABLE: 'Table',
@@ -77,6 +87,13 @@ const ChartConfigs = {
 
 const BAR_HEIGHT = 55;
 
+const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export {
   CITY_LIST,
@@ -93,5 +110,8 @@ export {
   DEFAULT_TYPE,
   MenuItem,
   ChartConfigs,
-  BAR_HEIGHT
+  BAR_HEIGHT,
+  Method,
+  State,
+  SHAKE_ANIMATION_TIMEOUT,
 };

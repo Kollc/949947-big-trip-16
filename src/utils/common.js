@@ -23,6 +23,7 @@ export const getNewPoint = (destination, offers) => ({
   destination,
   offers,
   type: DEFAULT_TYPE,
+  isFavorite: false,
 });
 
 export const getTypesTimeDuration = (points, types) => {
@@ -68,6 +69,15 @@ export const getTypesCount = (points, types) => {
     count = 0;
   });
   return itemsTypesCount;
+};
+
+export const getKeysInMapObj = (mapKeys) => {
+  const keys = [];
+  for(const key of mapKeys) {
+    keys.push(key);
+  }
+
+  return keys;
 };
 
 export const sortByPrice = (pointOne, pointTwo) => pointTwo.basePrice - pointOne.basePrice;

@@ -10,7 +10,7 @@ import he from 'he';
 
 const createSitePointTemplate = (point) => {
   const {
-    offers: offersContainer,
+    offers,
     dateFrom,
     dateTo,
     type,
@@ -21,13 +21,9 @@ const createSitePointTemplate = (point) => {
     }
   } = point;
 
-
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
   const createPointOffersTemplate = () => {
-    const {
-      offers
-    } = offersContainer;
 
     if (offers) {
       const result = offers.map(({
@@ -89,6 +85,7 @@ export default class SitePointView extends SiteAbstractView {
   constructor(point) {
     super();
     this.#point = point;
+
   }
 
   get template() {

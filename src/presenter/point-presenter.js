@@ -7,7 +7,7 @@ import {
   remove,
 } from '../utils/render';
 
-import { Mode , UserAction, UpdateType } from '../consts';
+import { Mode , UserAction, UpdateType, State } from '../consts';
 
 export default class PointPresenter {
   #pointComponent = null;;
@@ -33,7 +33,7 @@ export default class PointPresenter {
     const pointEditComponent = this.#pointEditComponent;
 
     this.#point = point;
-    this.#pointComponent = new SitePointView(this.#point, this.#offers);
+    this.#pointComponent = new SitePointView(this.#point);
     this.#pointEditComponent = new SiteEditView(this.#point, this.#offers, this.#destinations);
 
     this.#pointComponent.setOpenEditClickHandler(this.#openEditClickHandler);
@@ -50,12 +50,47 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, pointEditComponent);
+      replace(this.#pointComponent, pointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(pointComponent);
     remove(pointEditComponent);
   }
+
+  setViewState = (state) => {
+    if (this.#mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this.#pointEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#pointEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this.#pointComponent.shake(resetFormState);
+        this.#pointEditComponent.shake(resetFormState);
+        break;
+    }
+  }
+
 
   #renderPoint = () => {
     render(this.#container, this.#pointComponent, RenderPosition.BEFOREEND);
@@ -100,7 +135,6 @@ export default class PointPresenter {
 
   #editSubmitHandler = (point) => {
     this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, point);
-    this.#replaceEditFormToPoint();
   }
 
   #replacePointToEditForm = () => {

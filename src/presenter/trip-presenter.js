@@ -2,18 +2,19 @@ import {
   RenderPosition,
   render,
   remove,
-} from '../utils/render';
+} from './../utils/render';
 
-import SiteSortView from '../view/site-sort-view';
-import SiteListView from '../view/site-list-view';
-import SiteEmptyView from '../view/site-empty-view';
+import SiteSortView from './../view/site-sort-view';
+import SiteListView from './../view/site-list-view';
+import SiteEmptyView from './../view/site-empty-view';
 import PointPresenter from './point-presenter';
-import { POINT_COUNT } from '../consts';
-import { SortType } from '../consts';
-import { sortByTime, sortByPrice } from '../utils/common';
+import { POINT_COUNT, State } from './../consts';
+import { SortType } from './../consts';
+import { sortByTime, sortByPrice } from './../utils/common';
 import { UpdateType, UserAction, FilterType} from './../consts';
-import { filter } from '../utils/filter';
+import { filter } from './../utils/filter';
 import PointNewPresenter from './point-new-presenter';
+import SiteLoadingView from './../view/site-loading-view';
 
 export default class TripPresenter {
   #tripSectionElement = null;
@@ -27,38 +28,61 @@ export default class TripPresenter {
   #filterModel = null;
   #filterType = FilterType.EVERYTHING;
   #pointNewPresenter = null;
+  #loadingComponent = new SiteLoadingView();
+  #isLoading = true;
+  #offersModel = null;
+  #offers = null;
+  #destinationsModel = null;
+  #destinations = null;
+  #addNewEventButtonElement = null;
 
-  constructor(tripSectionElement, pointsModel, filterModel, offersModel, destinationsModel) {
+  constructor(tripSectionElement, pointsModel, filterModel, offersModel, destinationsModel, addNewEventButtonElement) {
     this.#tripSectionElement = tripSectionElement;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-    this._offersModel = offersModel;
-    this.destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
+    this.#addNewEventButtonElement = addNewEventButtonElement;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction, this._offersModel, this.destinationsModel);
+    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction);
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(State.SAVING);
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setViewState(State.ABORTING);
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#pointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#pointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(State.DELETING);
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setViewState(State.ABORTING);
+        }
         break;
     }
   }
 
-  createPoint = (callback) => {
+  createPoint = () => {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init(callback);
+    this.#pointNewPresenter.init(this.#offers, this.#destinations);
   }
 
-  #handleModelEvent = (updateType, data) => {
+  #handleModelEvent = async (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenter.get(data.id).init(data);
@@ -71,11 +95,26 @@ export default class TripPresenter {
         this.#clearTripContainer({resetRenderedPointsCount: true, resetSortType: true});
         this.#renderTripContainer();
         break;
+      case UpdateType.INIT:
+        await this.#offersModel.getOffers().then((offers) => {
+          this.#offers = offers;
+        });
+
+        await this.#destinationsModel.getDestination().then((destinations) => {
+          this.#destinations = destinations;
+        });
+
+        this.#isLoading = false;
+        this.#addNewEventButtonElement.element.disabled = false;
+        remove(this.#loadingComponent);
+        this.#renderTripContainer();
+        break;
     }
   }
 
   init = () => {
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#renderTripContainer();
   }
@@ -83,6 +122,7 @@ export default class TripPresenter {
   destroy = () => {
     this.#clearTripContainer({resetRenderedTaskCount: true, resetSortType: true});
     this.#pointsModel.removeObserver(this.#handleModelEvent);
+    this.#offersModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
@@ -101,7 +141,16 @@ export default class TripPresenter {
     return filteredPoints;
   }
 
+  #renderLoading = () => {
+    render(this.#tripSectionElement, this.#loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
   #renderTripContainer = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderSort();
     this.#renderListPoints();
   }
@@ -114,6 +163,7 @@ export default class TripPresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noPointsComponent) {
       remove(this.#noPointsComponent);
@@ -173,7 +223,7 @@ export default class TripPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter =  new PointPresenter(this.#tripListContainerElement, this.#handleViewAction, this.#handleModeChange, this._offersModel.offers, this.destinationsModel.destinations);
+    const pointPresenter =  new PointPresenter(this.#tripListContainerElement, this.#handleViewAction, this.#handleModeChange, this.#offers, this.#destinations);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
