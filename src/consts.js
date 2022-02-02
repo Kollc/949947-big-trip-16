@@ -3,18 +3,18 @@ const POINT_TYPE_LIST = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'che
 const SortType = {
   DEFAULT: 'default',
   BY_PRICE: 'by-price',
-  BY_TIME: 'by-time'
+  BY_TIME: 'by-time',
 };
 
 const Mode = {
   DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING'
+  EDITING: 'EDITING',
 };
 
 const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',
-  DELETE_POINT: 'DELETE_POINT'
+  DELETE_POINT: 'DELETE_POINT',
 };
 
 const UpdateType = {
@@ -23,13 +23,13 @@ const UpdateType = {
   MAJOR: 'MAJOR',
   INIT: 'INIT',
   OFFERS: 'OFFERS',
-  DESTINATIONS: 'DESTINATIONS'
+  DESTINATIONS: 'DESTINATIONS',
 };
 
 const FilterType = {
   EVERYTHING: 'Everything',
   FUTURE: 'Future',
-  PAST: 'Past'
+  PAST: 'Past',
 };
 
 const DEFAULT_TYPE = 'taxi';
@@ -38,12 +38,12 @@ const Method = {
   GET: 'GET',
   PUT: 'PUT',
   POST: 'POST',
-  DELETE: 'DELETE'
+  DELETE: 'DELETE',
 };
 
 const MenuItem = {
   TABLE: 'Table',
-  STATS: 'Stats'
+  STATS: 'Stats',
 };
 
 const ChartConfigs = {
@@ -64,7 +64,7 @@ const ChartConfigs = {
   ANCHOR_DATA_LABELS: 'end',
   ANCHOR: 'end',
   ALIGN: 'start',
-  POSITION: 'left'
+  POSITION: 'left',
 };
 
 const BAR_HEIGHT = 55;
@@ -72,7 +72,7 @@ const BAR_HEIGHT = 55;
 const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
-  ABORTING: 'ABORTING'
+  ABORTING: 'ABORTING',
 };
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
@@ -93,5 +93,5 @@ export {
   Method,
   State,
   SHAKE_ANIMATION_TIMEOUT,
-  IS_NEW_POINT
+  IS_NEW_POINT,
 };
