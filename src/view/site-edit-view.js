@@ -5,7 +5,6 @@ import {
 } from './../utils/capitalize';
 
 import {
-  CITY_LIST,
   POINT_TYPE_LIST,
 } from './../consts.js';
 
@@ -36,16 +35,16 @@ const createEventTypeListTemplate = () => {
   return '';
 };
 
-const createOffersListTemplate = (offersContainer, isOffers, offersList) => {
-  const offersAll = changeInMapTitleToKey(offersList.offers);
-  const offersChecked = changeInMapTitleToKey(offersContainer.offers);
+const createOffersListTemplate = (offersPoint, offersList, isDisabled) => {
+  const offersAll = changeInMapTitleToKey(offersList);
+  const offersChecked = changeInMapTitleToKey(offersPoint);
 
-  if (isOffers) {
+  if (offersList && offersList.length > 0) {
     const result = [];
 
     offersAll.forEach(({id, price}, title) => {
       result.push(`<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-${id}" value="${title}" type="checkbox" name="event-offer-${title}" ${offersChecked.has(title) ? 'checked' : ''}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-${id}" value="${title}" type="checkbox" name="event-offer-${title}" ${offersChecked.has(title) ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
           <label class="event__offer-label" for="event-offer-${title}-${id}">
             <span class="event__offer-title">${he.encode(title)}</span>
             &plus;&euro;&nbsp;
@@ -66,8 +65,8 @@ const createOffersListTemplate = (offersContainer, isOffers, offersList) => {
   return '';
 };
 
-const createPhotosTemplate = (pictures, isPictures) => {
-  if (isPictures) {
+const createPhotosTemplate = (pictures) => {
+  if (pictures && pictures.length > 0) {
     const result = pictures.map(({
       src,
       description
@@ -82,26 +81,26 @@ const createPhotosTemplate = (pictures, isPictures) => {
   return '';
 };
 
-const createDestinationDescriptionTemplate = (destination, isDestinationDescription, isDestinationPictures) => {
+const createDestinationDescriptionTemplate = (destination, isDestinationDescription) => {
   const destinationDescription = destination.description ? destination.description : '';
   const destinationPictures = destination.pictures ? destination.pictures : [];
 
-  if (isDestinationDescription || isDestinationPictures) {
+  if (isDestinationDescription  || (destinationPictures && destinationPictures.length > 0)) {
     return `<section class="event__section  event__section--destination">
               <h3 class="event__section-title  event__section-title--destination">Destination</h3>
               <p class="event__destination-description">
               ${destinationDescription}
               </p>
-              ${createPhotosTemplate(destinationPictures, isDestinationPictures)}
+              ${createPhotosTemplate(destinationPictures)}
             </section>`;
   }
 
   return '';
 };
 
-const createDestinationPointTemplate = () => {
-  if (CITY_LIST) {
-    const result = CITY_LIST.map((city) => (`<option value = "${city}"/>`));
+const createDestinationPointTemplate = (citiesList) => {
+  if (citiesList && citiesList.length > 0) {
+    const result = citiesList.map((city) => (`<option value = "${city}"/>`));
 
     return `<datalist id = "destination-list-1">
               ${result.join('')}
@@ -113,27 +112,28 @@ const createDestinationPointTemplate = () => {
 
 const convertDateFormat = (date) => (dayjs(date).format('DD/MM/YY HH:mm'));
 
-const createDateTimeInputTemplate = (dateTo, dateFrom) => (
+const createDateTimeInputTemplate = (dateTo, dateFrom, isDisabled) => (
   `<div class="event__field-group  event__field-group--time">
     <label class="visually-hidden" for="event-start-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${convertDateFormat(dateFrom)}">
+    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${convertDateFormat(dateFrom)}" ${isDisabled ? 'disabled' : ''}>
     &mdash;
     <label class="visually-hidden" for="event-end-time-1">To</label>
-    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${convertDateFormat(dateTo)}">
+    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${convertDateFormat(dateTo)}" ${isDisabled ? 'disabled' : ''}>
   </div>`
 );
 
-const createSiteEditTemplate = (point, offersList) => {
+const createSiteEditTemplate = (point, offersList, citiesList, isNewPoint) => {
   const {
     basePrice,
     dateFrom,
     dateTo,
     destination,
-    offers: offersContainer,
+    offers: offersPoint,
     type,
     isDestinationDescription,
-    isDestinationPictures,
-    isOffers,
+    isDeleting,
+    isSaving,
+    isDisabled
   } = point;
 
   return (`<form class="event event--edit" action="#" method="post">
@@ -143,7 +143,7 @@ const createSiteEditTemplate = (point, offersList) => {
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
       ${createEventTypeListTemplate()}
     </div>
 
@@ -151,29 +151,37 @@ const createSiteEditTemplate = (point, offersList) => {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" autocomplete="on" />
-      ${createDestinationPointTemplate()}
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" autocomplete="on" ${isDisabled ? 'disabled' : ''} />
+      ${createDestinationPointTemplate(citiesList)}
     </div>
 
-    ${createDateTimeInputTemplate(dateTo, dateFrom)}
+    ${createDateTimeInputTemplate(dateTo, dateFrom, isDisabled)}
 
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
-    <button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>
+    ${isNewPoint
+      ?
+      `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+       <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Cancel...' : 'Cancel'}</button>`
+      :
+      `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+       <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+
+       <button class="event__rollup-btn" type="button">
+         <span class="visually-hidden">Open event</span>
+       </button>`
+    }
+
   </header>
   <section class="event__details">
-      ${createOffersListTemplate(offersContainer, isOffers, offersList)}
-      ${createDestinationDescriptionTemplate(destination, isDestinationDescription, isDestinationPictures)}
+      ${createOffersListTemplate(offersPoint, offersList, isDisabled)}
+      ${createDestinationDescriptionTemplate(destination, isDestinationDescription)}
   </section>
 </form>`);
 };
@@ -183,12 +191,16 @@ export default class SiteEditView extends SmartView {
   #datepickerDateFrom = null;
   #destinationName = null;
   #priceInputElement = null;
+  #citiesList = null;
+  #isNewPoint = null;
 
-  constructor(point, offers, destinations) {
+  constructor(point, offers, destinations, isNewPoint = false) {
     super();
     this._offers = offers;
     this._destinations = destinations;
-    this._data = SiteEditView.parsePointToData(point, this._offers);
+    this._data = SiteEditView.parsePointToData(point);
+    this.#citiesList = [...this._destinations.keys()];
+    this.#isNewPoint = isNewPoint;
     this.#destinationName = this._data.destination.name;
     this.#priceInputElement = this.element.querySelector('.event__input--price');
 
@@ -206,7 +218,7 @@ export default class SiteEditView extends SmartView {
 
   reset = (point) => {
     this.updateData(
-      SiteEditView.parsePointToData(point, this._offers),
+      SiteEditView.parsePointToData(point),
     );
   }
 
@@ -221,7 +233,7 @@ export default class SiteEditView extends SmartView {
 
   get template() {
     const offersListPoint = this._offers.get(this._data.type);
-    return createSiteEditTemplate(this._data, offersListPoint);
+    return createSiteEditTemplate(this._data, offersListPoint , this.#citiesList, this.#isNewPoint);
   }
 
   #typeTripClickHandler = (evt) => {
@@ -230,10 +242,7 @@ export default class SiteEditView extends SmartView {
 
     this.updateData({
       type: changedValue,
-      offers: {
-        type: changedValue,
-        offers: this._offers.get(changedValue).offers
-      }
+      offers: [],
     });
   }
 
@@ -241,8 +250,8 @@ export default class SiteEditView extends SmartView {
     evt.preventDefault();
 
     const changedValue = evt.target.value;
-    const currentOffers = changeInMapTitleToKey(this._data.offers.offers);
-    const originOffers = changeInMapTitleToKey(this._offers.get(this._data.type).offers);
+    const currentOffers = changeInMapTitleToKey(this._data.offers);
+    const originOffers = changeInMapTitleToKey(this._offers.get(this._data.type));
     const newOffersList = [];
 
     if(!evt.target.checked) {
@@ -257,17 +266,15 @@ export default class SiteEditView extends SmartView {
     });
 
     this.updateData({
-      offers: {
-        offers: newOffersList,
-      }
+      offers: newOffersList,
     });
   }
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
 
-    const regexStringCity = [...CITY_LIST].join('|');
-    if(evt.target.value.match(regexStringCity) || evt.target.value === '') {
+    const regexStringCity = [...this.#citiesList].join('|');
+    if(evt.target.value.match(regexStringCity)) {
       this.#destinationName = evt.target.value;
     } else {
       evt.target.value = '';
@@ -388,14 +395,12 @@ export default class SiteEditView extends SmartView {
     this.#datepickerDateFrom = null;
   }
 
-  static parsePointToData = (point, originOffersList) => {
-    const offers = originOffersList.get(point.type).offers;
-    return {...point,
-      isDestinationDescription: point.destination.description !== '',
-      isDestinationPictures: point.destination.pictures && point.destination.pictures.length > 0,
-      isOffers: offers && offers.length  > 0,
-    };
-  };
+  static parsePointToData = (point) => ({...point,
+    isDestinationDescription: point.destination.description !== '',
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+  });
 
   static parseDataToPoint = (data) => {
     const point = {...data};
@@ -404,17 +409,10 @@ export default class SiteEditView extends SmartView {
       point.destination.description = null;
     }
 
-    if(!point.isDestinationPictures) {
-      point.destination.pictures = null;
-    }
-
-    if(!point.isOffers) {
-      point.offers = null;
-    }
-
     delete point.isDestinationDescription;
-    delete point.isDestinationPictures;
-    delete point.isOffers;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }

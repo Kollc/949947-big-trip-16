@@ -7,6 +7,8 @@ export const sortByTime = (pointOne, pointTwo) => {
   return pointTwoDuration - pointOneDuration;
 };
 
+export const sortByDay = (pointOne, pointTwo) => pointOne.dateTo - pointTwo.dateTo;
+
 export const changeInMapTitleToKey = (mapList) => {
   const newMapList = new Map();
   mapList.forEach(({title, id, price}) => {
@@ -23,6 +25,7 @@ export const getNewPoint = (destination, offers) => ({
   destination,
   offers,
   type: DEFAULT_TYPE,
+  isFavorite: false,
 });
 
 export const getTypesTimeDuration = (points, types) => {

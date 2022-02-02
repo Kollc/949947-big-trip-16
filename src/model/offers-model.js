@@ -1,16 +1,31 @@
 import Observer from './../utils/abstract-observable';
 
 export default class OffersModel extends Observer {
-  constructor() {
+  #apiService  = null;
+
+  constructor(apiService) {
     super();
-    this._offers = [];
+    this._offers = new Map();
+    this.#apiService = apiService;
   }
 
-  set offers(offers) {
-    this._offers = offers;
-  }
+  getOffers = async () => {
+    try {
+      const offers = await this.#apiService.offers;
+      this._offers = this.#adaptToClient(offers);
+    } catch(err) {
+      this._offers = [];
+    }
 
-  get offers() {
     return this._offers;
+  }
+
+  #adaptToClient = (offers) => {
+    const adaptedOffers = new Map();
+    offers.map((offer) => {
+      adaptedOffers.set(offer.type, offer.offers);
+    });
+
+    return adaptedOffers;
   }
 }
