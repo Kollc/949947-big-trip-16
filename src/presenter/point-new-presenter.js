@@ -34,7 +34,6 @@ export default class PointNewPresenter {
     this.#pointEditComponent.setEditSubmitHandler(this.#submitFormHandler);
     this.#pointEditComponent.setDeleteClickHandler(this.#clickDeleteHandler);
     render(this.#pointsListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
-
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
@@ -81,7 +80,6 @@ export default class PointNewPresenter {
       UpdateType.MINOR,
       {id: nanoid(), ...point},
     );
-    this.destroy();
   }
 
   #clickDeleteHandler = () => {

@@ -90,6 +90,7 @@ export default class TripPresenter {
       case UpdateType.MINOR:
         this.#clearTripContainer();
         this.#renderTripContainer();
+        this.#pointNewPresenter.destroy();
         break;
       case UpdateType.MAJOR:
         this.#clearTripContainer({resetRenderedPointsCount: true, resetSortType: true});

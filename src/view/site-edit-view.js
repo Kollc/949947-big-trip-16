@@ -227,8 +227,11 @@ export default class SiteEditView extends SmartView {
     this.#setDatepickerDateFrom();
     this.#setDatepickerDateTo();
     this.setEditSubmitHandler(this._callback.submit);
-    this.setCloseEditClickHandler(this._callback.clickClose);
     this.setDeleteClickHandler(this._callback.deleteClick);
+
+    if(!this.#isNewPoint) {
+      this.setCloseEditClickHandler(this._callback.clickClose);
+    }
   }
 
   get template() {
