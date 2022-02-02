@@ -93,5 +93,5 @@ export {
   Method,
   State,
   SHAKE_ANIMATION_TIMEOUT,
-  IS_NEW_POINT,
+  IS_NEW_POINT
 };
