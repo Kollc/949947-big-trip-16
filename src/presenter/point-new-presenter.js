@@ -1,7 +1,7 @@
 import SiteEditView from '../view/site-edit-view';
 import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render';
-import {UserAction, UpdateType} from './../consts';
+import {UserAction, UpdateType, IS_NEW_POINT} from './../consts';
 import { getNewPoint } from '../utils/common';
 
 export default class PointNewPresenter {
@@ -10,12 +10,13 @@ export default class PointNewPresenter {
   #pointEditComponent = null;
   #offers = null;
   #destinations = null;
-  #defaultNewOffers = null;
   #defaultNewDestinations = null;
+  #addNewEventButtonElement = null;
 
-  constructor(pointsListContainer, changeData) {
+  constructor(pointsListContainer, changeData, addNewEventButtonElement) {
     this.#pointsListContainer = pointsListContainer;
     this.#changeData = changeData;
+    this.#addNewEventButtonElement = addNewEventButtonElement;
   }
 
   init = (offers, destinations) => {
@@ -23,15 +24,15 @@ export default class PointNewPresenter {
       return;
     }
 
+    this.#addNewEventButtonElement.element.disabled = true;
+
     this.#offers = offers;
     this.#destinations = destinations;
-
     this.#defaultNewDestinations = this.#getCityForNewPoint();
 
-    this.#pointEditComponent = new SiteEditView(getNewPoint(this.#defaultNewDestinations, []) ,this.#offers, this.#destinations);
+    this.#pointEditComponent = new SiteEditView(getNewPoint(this.#defaultNewDestinations, []) ,this.#offers, this.#destinations, IS_NEW_POINT);
     this.#pointEditComponent.setEditSubmitHandler(this.#submitFormHandler);
     this.#pointEditComponent.setDeleteClickHandler(this.#clickDeleteHandler);
-    this.#pointEditComponent.setCloseEditClickHandler(this.#clickCloseHandler);
     render(this.#pointsListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -42,6 +43,7 @@ export default class PointNewPresenter {
       return;
     }
 
+    this.#addNewEventButtonElement.element.disabled = false;
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
 
@@ -83,10 +85,6 @@ export default class PointNewPresenter {
   }
 
   #clickDeleteHandler = () => {
-    this.destroy();
-  }
-
-  #clickCloseHandler = () => {
     this.destroy();
   }
 

@@ -8,9 +8,9 @@ import SiteSortView from './../view/site-sort-view';
 import SiteListView from './../view/site-list-view';
 import SiteEmptyView from './../view/site-empty-view';
 import PointPresenter from './point-presenter';
-import { POINT_COUNT, State } from './../consts';
+import { State } from './../consts';
 import { SortType } from './../consts';
-import { sortByTime, sortByPrice } from './../utils/common';
+import { sortByTime, sortByPrice, sortByDay } from './../utils/common';
 import { UpdateType, UserAction, FilterType} from './../consts';
 import { filter } from './../utils/filter';
 import PointNewPresenter from './point-new-presenter';
@@ -44,7 +44,7 @@ export default class TripPresenter {
     this.#destinationsModel = destinationsModel;
     this.#addNewEventButtonElement = addNewEventButtonElement;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction);
+    this.#pointNewPresenter = new PointNewPresenter(this.#tripListContainerElement, this.#handleViewAction, this.#addNewEventButtonElement);
   }
 
   #handleViewAction = async (actionType, updateType, update) => {
@@ -128,7 +128,7 @@ export default class TripPresenter {
 
   get points() {
     this.#filterType = this.#filterModel.filter;
-    const points = this.#pointsModel.points;
+    const points = this.#pointsModel.points.sort(sortByDay);
     const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
@@ -170,7 +170,7 @@ export default class TripPresenter {
     }
 
     if (resetRenderedPointsCount) {
-      this.#renderedPointsCount = POINT_COUNT;
+      this.#renderedPointsCount = this.points.length;
     } else {
       this.#renderedPointsCount = Math.min(pointsCount, this.#renderedPointsCount);
     }
@@ -205,8 +205,7 @@ export default class TripPresenter {
     render(this.#tripSectionElement, this.#tripListContainerElement, RenderPosition.BEFOREEND);
 
     if (pointsCount> 0) {
-      const points = this.points.slice(0, Math.min(pointsCount, POINT_COUNT));
-      this.#renderPoints(points);
+      this.#renderPoints(this.points);
     } else {
       this.#renderNoPoints();
     }

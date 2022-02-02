@@ -11,7 +11,7 @@ const DESTINATION_DESCRIPTION = [
   'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
   'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
   'Aliquam id orci ut lectus varius viverra.',
-  'Nullam nunc ex,convallis sed finibus eget, sollicitudin eget ante.'
+  'Nullam nunc ex,convallis sed finibus eget, sollicitudin eget ante.',
 ];
 
 const OFFER_TITLES = ['Upgrade to a business class', 'Add luggage', 'Switch to comfort', 'Add meal', 'Choose seats', 'Travel by train'];
@@ -21,8 +21,6 @@ const SortType = {
   BY_PRICE: 'by-price',
   BY_TIME: 'by-time',
 };
-
-const POINT_COUNT = 15;
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -61,7 +59,7 @@ const Method = {
 
 const MenuItem = {
   TABLE: 'Table',
-  STATS: 'Stats'
+  STATS: 'Stats',
 };
 
 const ChartConfigs = {
@@ -95,13 +93,14 @@ const State = {
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
+const IS_NEW_POINT = true;
+
 export {
   CITY_LIST,
   POINT_TYPE_LIST,
   MAX_COUNT_DESCRIPTION,
   DESTINATION_DESCRIPTION,
   OFFER_TITLES,
-  POINT_COUNT,
   SortType,
   Mode,
   UserAction,
@@ -114,4 +113,5 @@ export {
   Method,
   State,
   SHAKE_ANIMATION_TIMEOUT,
+  IS_NEW_POINT,
 };

@@ -14,7 +14,7 @@ import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import he from 'he';
-import { changeInMapTitleToKey, getKeysInMapObj } from '../utils/common';
+import { changeInMapTitleToKey } from '../utils/common';
 
 const createEventTypeListTemplate = () => {
   if (POINT_TYPE_LIST) {
@@ -35,11 +35,11 @@ const createEventTypeListTemplate = () => {
   return '';
 };
 
-const createOffersListTemplate = (offersPoint, isOffers, offersList, isDisabled) => {
+const createOffersListTemplate = (offersPoint, offersList, isDisabled) => {
   const offersAll = changeInMapTitleToKey(offersList);
   const offersChecked = changeInMapTitleToKey(offersPoint);
 
-  if (isOffers) {
+  if (offersList && offersList.length > 0) {
     const result = [];
 
     offersAll.forEach(({id, price}, title) => {
@@ -65,8 +65,8 @@ const createOffersListTemplate = (offersPoint, isOffers, offersList, isDisabled)
   return '';
 };
 
-const createPhotosTemplate = (pictures, isPictures) => {
-  if (isPictures) {
+const createPhotosTemplate = (pictures) => {
+  if (pictures && pictures.length > 0) {
     const result = pictures.map(({
       src,
       description
@@ -81,17 +81,17 @@ const createPhotosTemplate = (pictures, isPictures) => {
   return '';
 };
 
-const createDestinationDescriptionTemplate = (destination, isDestinationDescription, isDestinationPictures) => {
+const createDestinationDescriptionTemplate = (destination, isDestinationDescription) => {
   const destinationDescription = destination.description ? destination.description : '';
   const destinationPictures = destination.pictures ? destination.pictures : [];
 
-  if (isDestinationDescription || isDestinationPictures) {
+  if (isDestinationDescription  || (destinationPictures && destinationPictures.length > 0)) {
     return `<section class="event__section  event__section--destination">
               <h3 class="event__section-title  event__section-title--destination">Destination</h3>
               <p class="event__destination-description">
               ${destinationDescription}
               </p>
-              ${createPhotosTemplate(destinationPictures, isDestinationPictures)}
+              ${createPhotosTemplate(destinationPictures)}
             </section>`;
   }
 
@@ -122,7 +122,7 @@ const createDateTimeInputTemplate = (dateTo, dateFrom, isDisabled) => (
   </div>`
 );
 
-const createSiteEditTemplate = (point, offersList, citiesList) => {
+const createSiteEditTemplate = (point, offersList, citiesList, isNewPoint) => {
   const {
     basePrice,
     dateFrom,
@@ -131,8 +131,6 @@ const createSiteEditTemplate = (point, offersList, citiesList) => {
     offers: offersPoint,
     type,
     isDestinationDescription,
-    isDestinationPictures,
-    isOffers,
     isDeleting,
     isSaving,
     isDisabled
@@ -167,15 +165,23 @@ const createSiteEditTemplate = (point, offersList, citiesList) => {
       <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-    <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
-    <button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>
+    ${isNewPoint
+      ?
+      `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+       <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Cancel...' : 'Cancel'}</button>`
+      :
+      `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+       <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+
+       <button class="event__rollup-btn" type="button">
+         <span class="visually-hidden">Open event</span>
+       </button>`
+    }
+
   </header>
   <section class="event__details">
-      ${createOffersListTemplate(offersPoint, isOffers, offersList, isDisabled)}
-      ${createDestinationDescriptionTemplate(destination, isDestinationDescription, isDestinationPictures)}
+      ${createOffersListTemplate(offersPoint, offersList, isDisabled)}
+      ${createDestinationDescriptionTemplate(destination, isDestinationDescription)}
   </section>
 </form>`);
 };
@@ -186,13 +192,15 @@ export default class SiteEditView extends SmartView {
   #destinationName = null;
   #priceInputElement = null;
   #citiesList = null;
+  #isNewPoint = null;
 
-  constructor(point, offers, destinations) {
+  constructor(point, offers, destinations, isNewPoint = false) {
     super();
     this._offers = offers;
     this._destinations = destinations;
-    this._data = SiteEditView.parsePointToData(point, this._offers);
-    this.#citiesList = getKeysInMapObj(this._destinations.keys());
+    this._data = SiteEditView.parsePointToData(point);
+    this.#citiesList = [...this._destinations.keys()];
+    this.#isNewPoint = isNewPoint;
     this.#destinationName = this._data.destination.name;
     this.#priceInputElement = this.element.querySelector('.event__input--price');
 
@@ -210,7 +218,7 @@ export default class SiteEditView extends SmartView {
 
   reset = (point) => {
     this.updateData(
-      SiteEditView.parsePointToData(point, this._offers),
+      SiteEditView.parsePointToData(point),
     );
   }
 
@@ -225,7 +233,7 @@ export default class SiteEditView extends SmartView {
 
   get template() {
     const offersListPoint = this._offers.get(this._data.type);
-    return createSiteEditTemplate(this._data, offersListPoint, this.#citiesList);
+    return createSiteEditTemplate(this._data, offersListPoint , this.#citiesList, this.#isNewPoint);
   }
 
   #typeTripClickHandler = (evt) => {
@@ -234,7 +242,7 @@ export default class SiteEditView extends SmartView {
 
     this.updateData({
       type: changedValue,
-      offers: []
+      offers: [],
     });
   }
 
@@ -387,17 +395,12 @@ export default class SiteEditView extends SmartView {
     this.#datepickerDateFrom = null;
   }
 
-  static parsePointToData = (point, originOffersList) => {
-    const offers = originOffersList.get(point.type);
-    return {...point,
-      isDestinationDescription: point.destination.description !== '',
-      isDestinationPictures: point.destination.pictures && point.destination.pictures.length > 0,
-      isOffers: offers && offers.length  > 0,
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false,
-    };
-  };
+  static parsePointToData = (point) => ({...point,
+    isDestinationDescription: point.destination.description !== '',
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+  });
 
   static parseDataToPoint = (data) => {
     const point = {...data};
@@ -406,17 +409,7 @@ export default class SiteEditView extends SmartView {
       point.destination.description = null;
     }
 
-    if(!point.isDestinationPictures) {
-      point.destination.pictures = null;
-    }
-
-    if(!point.isOffers) {
-      point.offers = null;
-    }
-
     delete point.isDestinationDescription;
-    delete point.isDestinationPictures;
-    delete point.isOffers;
     delete point.isDisabled;
     delete point.isSaving;
     delete point.isDeleting;

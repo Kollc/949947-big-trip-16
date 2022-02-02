@@ -7,6 +7,8 @@ export const sortByTime = (pointOne, pointTwo) => {
   return pointTwoDuration - pointOneDuration;
 };
 
+export const sortByDay = (pointOne, pointTwo) => pointOne.dateTo - pointTwo.dateTo;
+
 export const changeInMapTitleToKey = (mapList) => {
   const newMapList = new Map();
   mapList.forEach(({title, id, price}) => {
@@ -69,15 +71,6 @@ export const getTypesCount = (points, types) => {
     count = 0;
   });
   return itemsTypesCount;
-};
-
-export const getKeysInMapObj = (mapKeys) => {
-  const keys = [];
-  for(const key of mapKeys) {
-    keys.push(key);
-  }
-
-  return keys;
 };
 
 export const sortByPrice = (pointOne, pointTwo) => pointTwo.basePrice - pointOne.basePrice;
