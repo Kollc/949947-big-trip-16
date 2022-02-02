@@ -80,11 +80,7 @@ const SHAKE_ANIMATION_TIMEOUT = 600;
 const IS_NEW_POINT = true;
 
 export {
-  CITY_LIST,
   POINT_TYPE_LIST,
-  MAX_COUNT_DESCRIPTION,
-  DESTINATION_DESCRIPTION,
-  OFFER_TITLES,
   SortType,
   Mode,
   UserAction,
