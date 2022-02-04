@@ -1,5 +1,8 @@
 const POINT_TYPE_LIST = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
+const AUTHORIZATION = 'Basic acsski7j4o93njjsi';
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
+
 const SortType = {
   DEFAULT: 'default',
   BY_PRICE: 'by-price',
@@ -93,5 +96,7 @@ export {
   Method,
   State,
   SHAKE_ANIMATION_TIMEOUT,
-  IS_NEW_POINT
+  IS_NEW_POINT,
+  END_POINT,
+  AUTHORIZATION
 };

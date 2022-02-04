@@ -5,14 +5,12 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import OffersModel from './model/offers-model';
 import DestinationsModel from './model/destinations-model';
 import SiteMenuView from './view/site-menu-view';
-import {MenuItem} from './consts.js';
+import {AUTHORIZATION, END_POINT, MenuItem} from './consts.js';
 import { render, RenderPosition, remove } from './utils/render';
 import StatisticsView from './view/site-statistics-view';
 import ApiService from './api-service.js';
 import SiteButtonNewEventView from './view/site-button-new-evet-view';
 
-const AUTHORIZATION = 'Basic acsski7j4o93njjsi';
-const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
 const navigationContainerElement = document.querySelector('.trip-controls__navigation');
 const filterContainerElement = document.querySelector('.trip-controls__filters');

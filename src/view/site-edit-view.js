@@ -190,7 +190,6 @@ export default class SiteEditView extends SmartView {
   #datepickerDateTo = null;
   #datepickerDateFrom = null;
   #destinationName = null;
-  #priceInputElement = null;
   #citiesList = null;
   #isNewPoint = null;
 
@@ -202,7 +201,6 @@ export default class SiteEditView extends SmartView {
     this.#citiesList = [...this._destinations.keys()];
     this.#isNewPoint = isNewPoint;
     this.#destinationName = this._data.destination.name;
-    this.#priceInputElement = this.element.querySelector('.event__input--price');
 
     this.#setInnerHandlers();
     this.#setDatepickerDateFrom();
@@ -213,7 +211,7 @@ export default class SiteEditView extends SmartView {
     this.element.querySelectorAll('.event__offer-selector input').forEach((item) => item.addEventListener('change', this.#offerChangeHandler));
     this.element.querySelectorAll('.event__type-label').forEach((item) => item.addEventListener('click', this.#typeTripClickHandler));
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.#priceInputElement.addEventListener('change', this.#basePriceChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#basePriceChangeHandler);
   }
 
   reset = (point) => {
