@@ -39,7 +39,15 @@ render(navigationContainerElement, siteMenuView, RenderPosition.BEFOREEND);
 const tripPresenter = new TripPresenter(tripSectionElement, pointsModel, filterModel, offersModel, destinationsModel, addNewEventButtonElement);
 const filterPresenter = new FilterPresenter(filterContainerElement, filterModel, pointsModel);
 
+let menuItemState = MenuItem.TABLE;
+
 const handleSiteMenuClick = (menuItem) => {
+  if( menuItemState !== menuItem) {
+    menuItemState = menuItem;
+  } else if(menuItemState === menuItem) {
+    return;
+  }
+
   switch (menuItem) {
     case MenuItem.TABLE:
       tripPresenter.init();
